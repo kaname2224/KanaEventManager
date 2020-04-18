@@ -1,0 +1,11 @@
+name: KanaEventManager
+author: Kaname
+version: 2.0
+main: fr.kaname.kanaeventmanager.KanaEventManager
+
+commands:
+  manageEvent:
+    aliases:
+      - event
+      - e
+    permission: kanaeventmanager.managerevent
