@@ -7,5 +7,6 @@ public class KanaEventManager extends JavaPlugin {
     @Override
     public void onEnable() {
         this.getLogger().info("Plugin Enabled !");
+        this.getLogger().info("J'aime les changements");
     }
 }
