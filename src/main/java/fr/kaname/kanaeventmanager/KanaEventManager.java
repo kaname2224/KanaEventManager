@@ -8,5 +8,6 @@ public class KanaEventManager extends JavaPlugin {
     public void onEnable() {
         this.getLogger().info("Plugin Enabled !");
         this.getLogger().info("J'aime les changements");
+        this.getLogger().info("J'aime les changements");
     }
 }
