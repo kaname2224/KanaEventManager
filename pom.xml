@@ -43,6 +43,15 @@
         <maven.compiler.target>1.8</maven.compiler.target>
     </properties>
 
+    <profiles>
+        <profile>
+            <id>testServer</id>
+            <build>
+                <directory>D:\documents\Programmation\javaPluginMc\Serveurs_Mc\1.15.2\Lobby 1.15.2\plugins</directory>
+            </build>
+        </profile>
+    </profiles>
+
 
 
 </project>
