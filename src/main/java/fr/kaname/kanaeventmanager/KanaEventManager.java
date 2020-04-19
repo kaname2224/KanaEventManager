@@ -1,13 +1,14 @@
 package fr.kaname.kanaeventmanager;
 
+import fr.kaname.kanabungeetp.KanaBungeeTP;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public class KanaEventManager extends JavaPlugin {
 
+    KanaBungeeTP kbtp;
+
     @Override
     public void onEnable() {
         this.getLogger().info("Plugin Enabled !");
-        this.getLogger().info("J'aime les changements");
-        this.getLogger().info("J'aime les changements");
     }
 }
