@@ -1,0 +1,22 @@
+
+# KanaEventManager Add-on to KanaBungeeTP
+# KanaEventManager Version 2.0
+# KanaBungeeTP required Version 2.0.1
+
+# If database doesn't work plugin will be disable
+
+database:
+  host: "127.0.0.1"
+  user: "root"
+  password: "sqldevtest"
+  database: "test"
+  port: "3306"
+
+  tables:
+    event: "KEM_event"
+
+# Server configuration for BungeeCord (specifies the bungee's config.yml server's name)
+
+  BungeeCord:
+    lobbyServerName: "lobby"
+    eventServerName: "event"
