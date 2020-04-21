@@ -4,8 +4,11 @@ import fr.kaname.kanaeventmanager.KanaEventManager;
 import org.bukkit.configuration.Configuration;
 
 import java.sql.DriverManager;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.List;
 
 public class DatabaseManager {
 
@@ -53,6 +56,28 @@ public class DatabaseManager {
                 "`LocY` DOUBLE NULL," +
                 "`LocZ` DOUBLE NULL," +
                 "PRIMARY KEY (`id`))");
+    }
+
+    public List<String> getEventList() {
+        List<String> EventList = new ArrayList<>();
+        try {
+            ResultSet datas = this.getStatement().executeQuery("SELECT * FROM " + this.getEventTable());
+            while (datas.next()) {
+                EventList.add(datas.getString("Name"));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return EventList;
+    }
+
+    public void createEvent(String Name, String Broadcast, Double LocX, Double LocY, Double LocZ) {
+        try {
+            this.getStatement().execute("INSERT INTO " + this.getEventTable() + "(`Name`, `Broadcast`, `LocX`, `LocY`, `LocZ`)" +
+                    "VALUES ('" + Name + "','" + Broadcast + "','" + LocX + "','" + LocY + "','" + LocZ + "')");
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 
 }

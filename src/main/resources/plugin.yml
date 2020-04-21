@@ -8,4 +8,4 @@ commands:
     aliases:
       - event
       - e
-    permission: kanaeventmanager.managerevent
+    permission: kanaeventmanager.manage.event
