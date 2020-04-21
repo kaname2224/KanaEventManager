@@ -22,7 +22,7 @@ public class eventCommandManager implements CommandExecutor {
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String msg, String[] args) {
 
-        if (cmd.getName().equalsIgnoreCase("manageEvent")) {
+        if (cmd.getName().equalsIgnoreCase("manageEvent") && args.length >= 1) {
             if (args[0].equalsIgnoreCase("reload")) {
                 plugin.reloadConfig();
                 sender.sendMessage(plugin.getPrefix() + ChatColor.AQUA + "Config Reloaded");
@@ -31,7 +31,7 @@ public class eventCommandManager implements CommandExecutor {
 
         if (sender instanceof Player) {
             Player player = (Player) sender;
-            if (cmd.getName().equals("manageEvent")) {
+            if (cmd.getName().equals("manageEvent") && args.length >= 1) {
                 if (args[0].equalsIgnoreCase("create") && args.length >= 3) {
                     String name = args[1];
                     if (!plugin.getDatabaseManager().getEventList().contains(name)) {
@@ -52,6 +52,9 @@ public class eventCommandManager implements CommandExecutor {
                     }
 
                 }
+            } else if (cmd.getName().equals("manageEvent")) {
+                player.sendMessage(ChatColor.RED + "Args missing");
+                player.sendMessage(ChatColor.AQUA + "DEBUG : Afficher l'aide ici !");
             }
         }
         return false;

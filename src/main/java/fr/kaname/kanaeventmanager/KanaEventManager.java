@@ -1,6 +1,7 @@
 package fr.kaname.kanaeventmanager;
 
 import fr.kaname.kanabungeetp.KanaBungeeTP;
+import fr.kaname.kanaeventmanager.listeners.AutocompleteListener;
 import fr.kaname.kanaeventmanager.listeners.JoinListener;
 import fr.kaname.kanaeventmanager.managers.DatabaseManager;
 import fr.kaname.kanaeventmanager.managers.eventCommandManager;
@@ -18,6 +19,7 @@ public class KanaEventManager extends JavaPlugin {
         this.db = new DatabaseManager(this);
         this.db.ConnectDatabase();
         this.getServer().getPluginManager().registerEvents(new JoinListener(this), this);
+        this.getServer().getPluginManager().registerEvents(new AutocompleteListener(this), this);
         this.getCommand("event").setExecutor(new eventCommandManager(this));
     }
 
