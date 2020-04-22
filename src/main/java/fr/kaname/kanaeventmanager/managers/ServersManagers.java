@@ -18,13 +18,15 @@ public class ServersManagers{
     public void ScheduleOpenedServer(int delay, Player player){
 
         plugin.getKbtpPlugin().openServer(eventServerName);
-        player.sendMessage(plugin.getPrefix() + ChatColor.AQUA + " Event server open for " + delay + " seconds");
+        plugin.getLogger().info(eventServerName);
+        player.sendMessage(plugin.getPrefix() + ChatColor.AQUA + "Event server open for " + delay + " seconds");
 
         new BukkitRunnable() {
 
             @Override
             public void run() {
                 plugin.getKbtpPlugin().closeServer(eventServerName);
+                player.sendMessage(plugin.getPrefix() + ChatColor.AQUA + "Event server closed type §6/event launch §bto start event !");
             }
 
         }.runTaskLater(plugin, delay * 20);

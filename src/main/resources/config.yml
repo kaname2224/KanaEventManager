@@ -17,6 +17,6 @@ database:
 
 # Server configuration for BungeeCord (specifies the bungee's config.yml server's name)
 
-  BungeeCord:
-    lobbyServerName: "lobby"
-    eventServerName: "event"
+BungeeCord:
+  lobbyServerName: "lobby"
+  eventServerName: "event"

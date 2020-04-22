@@ -1,5 +1,6 @@
 package fr.kaname.kanaeventmanager.listeners;
 
+import fr.kaname.kanabungeetp.objects.Servers;
 import fr.kaname.kanaeventmanager.KanaEventManager;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -26,6 +27,12 @@ public class AutocompleteListener implements Listener {
         List<String> args1Complete = new ArrayList<>();
         args1Complete.add("create");
         args1Complete.add("reload");
+        args1Complete.add("start");
+        args1Complete.add("setEventServer");
+
+        List<String> argsStartComplete = new ArrayList<>();
+        argsStartComplete.add("-p");
+        argsStartComplete.add("-t");
 
         if (event.getSender() instanceof Player) {
             Player player = (Player) event.getSender();
@@ -35,6 +42,29 @@ public class AutocompleteListener implements Listener {
                         String cmdComplete = aliase + " " + arg;
                         if (cmdComplete.contains(command)) {
                             complete.add(arg);
+                        }
+                    }
+                }
+
+                if(command.startsWith(aliase + " start")) {
+                    complete.clear();
+                    for (String arg : plugin.getDatabaseManager().getEventList()) {
+                        String cmdComplete = aliase + " start " + arg.toLowerCase();
+                        if (cmdComplete.contains(command.toLowerCase())) {
+                            complete.add(arg);
+                        }
+                    }
+                }
+
+                if(command.startsWith(aliase + " setEventServer")) {
+                    complete.clear();
+                    for (Servers srv : plugin.getKbtpPlugin().getDatabaseManager().getServersList()) {
+
+                        String serverName = srv.getServerName();
+
+                        String cmdComplete = aliase + " setEventServer " + serverName.toLowerCase();
+                        if (cmdComplete.toLowerCase().contains(command.toLowerCase())) {
+                            complete.add(serverName);
                         }
                     }
                 }
