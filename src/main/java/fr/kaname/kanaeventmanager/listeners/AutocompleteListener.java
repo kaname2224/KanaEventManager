@@ -28,7 +28,11 @@ public class AutocompleteListener implements Listener {
         args1Complete.add("create");
         args1Complete.add("reload");
         args1Complete.add("start");
+        args1Complete.add("stop");
         args1Complete.add("setEventServer");
+        args1Complete.add("infos");
+        args1Complete.add("launch");
+        args1Complete.add("listPlayer");
 
         List<String> argsStartComplete = new ArrayList<>();
         argsStartComplete.add("-p");
@@ -50,8 +54,25 @@ public class AutocompleteListener implements Listener {
                     complete.clear();
                     for (String arg : plugin.getDatabaseManager().getEventList()) {
                         String cmdComplete = aliase + " start " + arg.toLowerCase();
+
+                        if (cmdComplete.equals(command.toLowerCase()) || command.equals(aliase + " start")) {
+                            return;
+                        }
+
+
                         if (cmdComplete.contains(command.toLowerCase())) {
                             complete.add(arg);
+                        }
+
+                        if (command.contains(arg)) {
+                            for (String arg2 : argsStartComplete) {
+                                String cmdComplete2 = aliase + " start " + arg.toLowerCase() + " " + arg2.toLowerCase();
+
+                                if (cmdComplete2.contains(command.toLowerCase())) {
+                                    complete.add(arg2);
+                                }
+                            }
+                            break;
                         }
                     }
                 }
