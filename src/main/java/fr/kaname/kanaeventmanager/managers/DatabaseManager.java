@@ -1,6 +1,7 @@
 package fr.kaname.kanaeventmanager.managers;
 
 import fr.kaname.kanaeventmanager.KanaEventManager;
+import fr.kaname.kanaeventmanager.object.eventObject;
 import org.bukkit.configuration.Configuration;
 
 import java.sql.DriverManager;
@@ -69,6 +70,25 @@ public class DatabaseManager {
             e.printStackTrace();
         }
         return EventList;
+    }
+
+    public eventObject getEvent(String eventName) {
+        eventObject event = null;
+        try {
+            ResultSet datas = this.getStatement().executeQuery("SELECT * FROM " + this.getEventTable() + " WHERE `Name` = '" + eventName + "'");
+            if (datas.next()) {
+
+                String broadcast = datas.getString(3);
+                Double locX = datas.getDouble(4);
+                Double locY = datas.getDouble(5);
+                Double locZ = datas.getDouble(6);
+
+                event = new eventObject(eventName, broadcast, locX, locY, locZ);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return event;
     }
 
     public void createEvent(String Name, String Broadcast, Double LocX, Double LocY, Double LocZ) {

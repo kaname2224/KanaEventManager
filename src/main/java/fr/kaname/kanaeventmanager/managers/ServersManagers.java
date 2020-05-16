@@ -29,10 +29,12 @@ public class ServersManagers{
 
             @Override
             public void run() {
-                plugin.getKbtpPlugin().closeServer(eventServerName);
-                player.sendMessage(plugin.getPrefix() + ChatColor.AQUA + "Event server closed type §6/event launch §bto start event !");
-                plugin.setServerEventOpen(false);
-                plugin.setServerOpenState("ready");
+                if (plugin.getServerOpenState() != "ready" && !plugin.isEvent()) {
+                    plugin.getKbtpPlugin().closeServer(eventServerName);
+                    player.sendMessage(plugin.getPrefix() + ChatColor.AQUA + "Event server closed type §6/event launch §bto start event !");
+                    plugin.setServerEventOpen(false);
+                    plugin.setServerOpenState("ready");
+                }
             }
 
         }.runTaskLater(plugin, delay * 20);

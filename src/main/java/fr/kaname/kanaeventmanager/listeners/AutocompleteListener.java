@@ -29,10 +29,10 @@ public class AutocompleteListener implements Listener {
         args1Complete.add("reload");
         args1Complete.add("start");
         args1Complete.add("stop");
-        args1Complete.add("setEventServer");
         args1Complete.add("infos");
         args1Complete.add("launch");
         args1Complete.add("listPlayer");
+        args1Complete.add("forceReady");
 
         List<String> argsStartComplete = new ArrayList<>();
         argsStartComplete.add("-p");
@@ -77,13 +77,13 @@ public class AutocompleteListener implements Listener {
                     }
                 }
 
-                if(command.startsWith(aliase + " setEventServer")) {
+                if(command.startsWith(aliase + " setLobbyServer")) {
                     complete.clear();
                     for (Servers srv : plugin.getKbtpPlugin().getDatabaseManager().getServersList()) {
 
                         String serverName = srv.getServerName();
 
-                        String cmdComplete = aliase + " setEventServer " + serverName.toLowerCase();
+                        String cmdComplete = aliase + " setLobbyServer " + serverName.toLowerCase();
                         if (cmdComplete.toLowerCase().contains(command.toLowerCase())) {
                             complete.add(serverName);
                         }

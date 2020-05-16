@@ -39,12 +39,7 @@ public class eventCommandManager implements CommandExecutor {
                     plugin.getEventManager().launchEvent(player);
                 }
                 if (args[0].equalsIgnoreCase("stop")) {
-                    plugin.setEvent(false);
-                    plugin.setActualEventName(null);
-                    plugin.setServerEventOpen(false);
-                    plugin.setServerOpenState(null);
-                    player.sendMessage(plugin.getPrefix() + ChatColor.AQUA + "Fermeture de l'event et éjections des joueurs");
-                    plugin.getKbtpPlugin().closeServer(plugin.getConfig().getString("BungeeCord.eventServerName"));
+                   plugin.getEventManager().stopEvent(player);
                 }
 
                 if (args[0].equalsIgnoreCase("create") && args.length >= 3) {
@@ -68,20 +63,20 @@ public class eventCommandManager implements CommandExecutor {
 
                 }
 
-                if (args[0].equalsIgnoreCase("setEventServer")) {
+                if (args[0].equalsIgnoreCase("setLobbyServer")) {
 
                     if (args.length >= 2) {
                         try {
                             String serverName = plugin.getKbtpPlugin().getDatabaseManager().getServer(args[1]).getServerName();
-                            plugin.getConfig().set("BungeeCord.eventServerName", serverName);
+                            plugin.getConfig().set("BungeeCord.lobbyServerName", serverName);
                             plugin.saveConfig();
                             plugin.reloadConfig();
-                            player.sendMessage(plugin.getPrefix() + ChatColor.AQUA + "Le nouveau serveur d'event a bien été changé");
+                            player.sendMessage(plugin.getPrefix() + ChatColor.AQUA + "Le nouveau lobby a bien été changé");
                         } catch (NullPointerException e) {
                             player.sendMessage(plugin.getPrefix() + ChatColor.RED + "Ce serveur n'existe pas !");
                         }
                     } else {
-                        player.sendMessage(plugin.getPrefix() + ChatColor.RED + "Usage : /event setEventManager [ServerName]");
+                        player.sendMessage(plugin.getPrefix() + ChatColor.RED + "Usage : /event setLobbyServer [ServerName]");
                     }
 
                 }
@@ -165,6 +160,14 @@ public class eventCommandManager implements CommandExecutor {
                         player.sendMessage(eventInfos);
                     }
                 }
+                if (args[0].equalsIgnoreCase("forceReady")) {
+                    if(plugin.getActualEventName() != null) {
+                        plugin.getServersManagers().forceStartEvent(player);
+                    } else {
+                        player.sendMessage(plugin.getPrefix() + ChatColor.RED + "Il n'y a pas d'event actuellement !");
+                    }
+                }
+
             } else if (cmd.getName().equals("manageEvent")) {
                 player.sendMessage(ChatColor.RED + "Args missing");
                 player.sendMessage(ChatColor.AQUA + "DEBUG : Afficher l'aide ici !");
