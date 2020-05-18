@@ -46,7 +46,7 @@ public class JoinListener implements Listener {
         for (Player player : Bukkit.getOnlinePlayers()) {
             plugin.getLogger().info(player.getDisplayName());
 
-            if (!player.isOp()) {
+            if (!player.isOp() || !player.hasPermission("kanaeventmanager.event.bypass")) {
                 plugin.addEventPlayerCount();
                 plugin.getPlayerList().add(player.getUniqueId());
             }
