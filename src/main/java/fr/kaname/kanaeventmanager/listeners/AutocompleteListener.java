@@ -33,6 +33,7 @@ public class AutocompleteListener implements Listener {
         args1Complete.add("launch");
         args1Complete.add("listPlayer");
         args1Complete.add("forceReady");
+        args1Complete.add("leave");
 
         List<String> argsStartComplete = new ArrayList<>();
         argsStartComplete.add("-p");

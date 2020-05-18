@@ -65,5 +65,8 @@ public class EventManager {
                 plugin.getKbtpPlugin().send_server(participant, plugin.getConfig().getString("BungeeCord.lobbyServerName"));
             }
         }
+
+        plugin.resetPlayerList();
+        player.sendMessage(plugin.getPrefix() + ChatColor.AQUA + "Event fermé !");
     }
 }
