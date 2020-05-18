@@ -3,9 +3,88 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" type="text/css" href="Assets/style.css">
     <title>KanaEventManager Documentation FR Spigot</title>
+    <META HTTP-EQUIV="Refresh" CONTENT="1">
 </head>
+
 <body>
     
+    <h1>KanaEventManager -- Version 2.0.1 par Kaname -- Documentation Officielle </h1>
+
+    <div id="Sommaire" class="Section">
+        <h1>Sommaire</h1>
+        <div class="cadre">
+            <a href="#Description">Description</a><br />
+            <a href="#Download">Télechargement</a><br />
+            <a href="#Install">Installation</a><br />
+            <a href="#Commands">Commandes</a><br />
+            <a href="#ancre6">Permissions</a>
+        </div>
+    </div>
+
+    <div id="Description" class="Section">
+        <h1>Description</h1>
+        <p>
+            KanaEventManager est un add-on à KanaBungeeTP qui se chargera de grer vos évènement de serveur de façon rapide
+            et intuitive grâce à des commandes précises tout cela en interserveur 
+        </p>
+        <p>
+            Pour utiliser KanaEventManager vous devez avoir KanaBungeeTP installé et configuré <a href="#Download">Voir les téléchargements</a>
+            <br />
+            Ainsi qu'une base de données fonctionnelle
+
+        </p>
+    </div>
+
+    <div id="Download" class="Section">
+        <h1>Télechargement</h1>
+        <p>
+            Vous devez avoir KanaBungeeTP, téléchargez le sur
+            <a href="https://www.spigotmc.org/resources/kanabungeetp.77601/">SpigotMC</a>
+        </p>
+    </div>
+
+    <div id="Install" class="Section">
+        <h1>Installation</h1>
+        <p>
+            - Installez et configurez KanaBungeeTP <br />
+            - Eteignez votre serveur et mettez KanaEventManager dans le dossier plugin de votre serveur d'évènement<br />
+            - Redemarrez votre serveur et vérifiez que KanaBungeeTP et KanaEventManager démarrent<br />
+            - Ouvrez le config.yml de KanaEventManager et rentrez vos informations de connexion à la base de données<br />
+            - Entrez le nom des serveur lobby et event (ces nom doivent être ceux définie dans votre configuration BungeeCord)<br />
+            - Voilà KanaEventManager est configuré et prèt à l'emplois !
+            
+        </p>
+    </div>
+    <div id="Commands" class="Section">
+        <h1>Commandes</h1>
+        <p>
+            Nous pouvons donc passez aux différente commandes du plugins<br />
+            Les mots en majuscule dans le nom de la commandes sont les paramètres pris en comptes
+            <br /><br />
+
+            <span class="command_name">/manageEvent</span> => <span class="command_desc">Commande de base elle à 2 aliases le /event et le /e -- affiche l'aide</span><br /><br />
+            
+            <span class="command_name">/manageEvent create NOM BROADCAST</span> => <span class="command_desc">Permet de créer un évènement elle prend en parametre un nom et un broadcast
+            </span><br /><br />
+
+            <span class="command_name">/manageEvent start NOM -p|-t VALEUR</span> => <span class="command_desc">Prépare un event et ouvre le serveur event au public 
+                <br />-p : permet de définir un nombre de joueur maximum des que ce nombre est atteint le serveur se fermera au public
+                <br />-t : permet de mettre un temps en secondes pendant lequels le serveur event sera ouvert au public
+            </span><br /><br />
+
+            <span class="command_name">/manageEvent infos</span> => <span class="command_desc">Donne des informations sur l'event en cours ou en préparation<br />
+                tel que son createur, le nombre de participants, son status actuel</span><br /><br />
+
+            <span class="command_name">/manageEvent listPlayer</span> => <span class="command_desc">Donne la liste des pseudos des participants</span><br /><br />
+
+            <span class="command_name">/manageEvent launch</span> => <span class="command_desc">Lance l'event préparé si celui-ci est prêt</span><br /><br />
+
+            <span class="command_name">/manageEvent stop</span> => <span class="command_desc">Arrète l'event et éjecte les participants</span><br /><br />
+
+        </p>
+    </div>
+
 </body>
 </html>
