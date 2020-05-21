@@ -36,6 +36,7 @@ public class JoinListener implements Listener {
     @EventHandler
     public void onQuit(PlayerQuitEvent event) {
         event.setQuitMessage(plugin.getPrefix() + ChatColor.AQUA + event.getPlayer().getDisplayName() + " est parti !");
+        this.updateParticipant();
     }
 
     private void updateParticipant() {

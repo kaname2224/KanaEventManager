@@ -41,6 +41,10 @@ public class eventCommandManager implements CommandExecutor {
                 if (args[0].equalsIgnoreCase("stop")) {
                    plugin.getEventManager().stopEvent(player);
                 }
+                if(args[0].equalsIgnoreCase("leave")) {
+                    String serverName = plugin.getConfig().getString("BungeeCord.lobbyServerName");
+                    plugin.getKbtpPlugin().send_server(player, serverName);
+                }
 
                 if (args[0].equalsIgnoreCase("create") && args.length >= 3) {
                     String name = args[1];

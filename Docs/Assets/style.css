@@ -32,9 +32,6 @@ h1 {
 #Sommaire a:hover { 
     color: black;
 }
-#Sommaire a:visited { 
-    color: purple;
-}
 
 .cadre {
     width: 100%;
