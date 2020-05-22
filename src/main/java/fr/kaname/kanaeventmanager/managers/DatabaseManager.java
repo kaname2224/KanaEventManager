@@ -15,7 +15,9 @@ public class DatabaseManager {
 
     private KanaEventManager plugin;
     private Statement statement;
+    private Statement checker;
     private String eventTable;
+    private String LastVersion;
 
     public DatabaseManager(KanaEventManager plugin) {
         this.plugin = plugin;
@@ -46,6 +48,28 @@ public class DatabaseManager {
         } catch (SQLException e) {
             e.printStackTrace();
         }
+
+        try {
+            this.checker = DriverManager.getConnection("jdbc:mysql://webcord.fr:3306/devblog", "checker", "").createStatement();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public String GetPluginLatestVersion() {
+        try {
+            ResultSet Version = this.checker.executeQuery("SELECT * FROM plugins WHERE `nom` = '" + plugin.getName() + "'");
+            Version.next();
+            LastVersion = Version.getString("version");
+            return LastVersion;
+
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return null;
+
     }
 
     private void createTable() throws SQLException {

@@ -2,6 +2,8 @@ package fr.kaname.kanaeventmanager.listeners;
 
 import fr.kaname.kanabungeetp.KanaBungeeTP;
 import fr.kaname.kanaeventmanager.KanaEventManager;
+import net.md_5.bungee.api.chat.ClickEvent;
+import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -22,6 +24,11 @@ public class JoinListener implements Listener {
 
     @EventHandler
     public void onJoin(PlayerJoinEvent event) {
+
+        if (event.getPlayer().isOp()) {
+            checkLatestVersion(event.getPlayer());
+        }
+
         if (plugin.getServerOpenState() != null && plugin.getServerOpenState().equalsIgnoreCase("slot")) {
             this.updateParticipant();
             event.setJoinMessage(plugin.getPrefix() + ChatColor.AQUA + event.getPlayer().getDisplayName() + " a rejoins l'event "+ plugin.getActualEventName() +" (" + plugin.getEventPlayerCount() + "/" + plugin.getSlot() + ")");
@@ -39,6 +46,31 @@ public class JoinListener implements Listener {
         this.updateParticipant();
     }
 
+    private void checkLatestVersion(Player player) {
+        String Latest = plugin.getDatabaseManager().GetPluginLatestVersion();
+        String Current = plugin.getDescription().getVersion();
+
+        if (!Latest.equalsIgnoreCase(Current)) {
+            TextComponent msg = new TextComponent(ChatColor.BLUE + "========= KanaEventManager =========\n" +
+                    ChatColor.AQUA + "  Nouvelle version disponible : " + Latest + "\n" +
+                    ChatColor.AQUA + "  Version Actuelle : " + Current + "\n" +
+                    ChatColor.AQUA + "  Cliquez ");
+
+            TextComponent link = new TextComponent("ICI" + ChatColor.AQUA);
+            link.setColor(net.md_5.bungee.api.ChatColor.BLUE);
+
+            link.setClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL,
+                    "https://devblog.webcord.fr/plugins/?plugin=KanaEventManager&lang=FR_fr"));
+
+            msg.addExtra(link);
+            msg.addExtra(ChatColor.AQUA + " pour la télécharger" + "\n" +
+                    ChatColor.BLUE + "===================================");
+
+            player.spigot().sendMessage(msg);
+
+        }
+    }
+
     private void updateParticipant() {
 
         plugin.resetEventPlayerCount();
@@ -53,7 +85,7 @@ public class JoinListener implements Listener {
             }
         }
 
-        if (plugin.getPlayerList().size() >= plugin.getSlot() && plugin.getServerOpenState().equals("slot")) {
+        if (!plugin.getPlayerList().isEmpty() && plugin.getPlayerList().size() >= plugin.getSlot() && plugin.getServerOpenState().equals("slot")) {
 
             String eventServerName = plugin.getConfig().getString("BungeeCord.eventServerName");
 
