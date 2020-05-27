@@ -34,18 +34,13 @@ public class eventCommandManager implements CommandExecutor {
 
         if (sender instanceof Player) {
             Player player = (Player) sender;
-            if (cmd.getName().equals("manageEvent") && args.length >= 1) {
+            if (cmd.getName().equals("manageEvent") && args.length >= 1 && player.hasPermission("kanaeventmanager.event.admin")) {
                 if (args[0].equalsIgnoreCase("launch")) {
                     plugin.getEventManager().launchEvent(player);
                 }
                 if (args[0].equalsIgnoreCase("stop")) {
                    plugin.getEventManager().stopEvent(player);
                 }
-                if(args[0].equalsIgnoreCase("leave")) {
-                    String serverName = plugin.getConfig().getString("BungeeCord.lobbyServerName");
-                    plugin.getKbtpPlugin().send_server(player, serverName);
-                }
-
                 if (args[0].equalsIgnoreCase("create") && args.length >= 3) {
                     String name = args[1];
                     if (!plugin.getDatabaseManager().getEventList().contains(name)) {
@@ -171,10 +166,81 @@ public class eventCommandManager implements CommandExecutor {
                         player.sendMessage(plugin.getPrefix() + ChatColor.RED + "Il n'y a pas d'event actuellement !");
                     }
                 }
+                if (args[0].equalsIgnoreCase("setSpawnPoint")) {
 
-            } else if (cmd.getName().equals("manageEvent")) {
-                player.sendMessage(ChatColor.RED + "Args missing");
-                player.sendMessage(ChatColor.AQUA + "DEBUG : Afficher l'aide ici !");
+                    Location pos = player.getLocation();
+
+                    double locX = pos.getX();
+                    double locY = pos.getY();
+                    double locZ = pos.getZ();
+
+                    float pitch = pos.getPitch();
+                    float yaw = pos.getYaw();
+
+                    String world = pos.getWorld().getName();
+
+
+                    plugin.getConfig().set("SpawnPoint.locX", locX);
+                    plugin.getConfig().set("SpawnPoint.locY", locY);
+                    plugin.getConfig().set("SpawnPoint.locZ", locZ);
+                    plugin.getConfig().set("SpawnPoint.pitch", pitch);
+                    plugin.getConfig().set("SpawnPoint.yaw", yaw);
+                    plugin.getConfig().set("SpawnPoint.world", world);
+
+                    plugin.saveConfig();
+
+                    player.sendMessage(plugin.getPrefix() + ChatColor.AQUA + "Le spawn a bien été définie à votre position");
+
+                }
+
+                if (args[0].equalsIgnoreCase("spawn")) {
+                    if (args.length >= 2) {
+                        Player target = Bukkit.getPlayer(args[1]);
+                        if (target != null) {
+                            plugin.sendSpawn(target);
+                        } else {
+                            player.sendMessage(plugin.getPrefix() + ChatColor.RED + "ce joueur n'a pas été trouvé");
+                        }
+                    } else {
+                        plugin.sendSpawn(player);
+                    }
+                }
+
+                if (args[0].equalsIgnoreCase("leave")) {
+                    String serverName = plugin.getConfig().getString("BungeeCord.lobbyServerName");
+                    plugin.getKbtpPlugin().send_server(player, serverName);
+                }
+
+                if (args[0].equalsIgnoreCase("kick") && args.length >= 2) {
+                    player.sendMessage(plugin.getPrefix() + ChatColor.AQUA + "Vous avez expulsé " + args[1]);
+                    String lobbyServerName = plugin.getConfig().getString("BungeeCord.lobbyServerName");
+                    Player target = Bukkit.getPlayer(args[1]);
+                    if (target != null) {
+                        plugin.getKbtpPlugin().send_server(target, lobbyServerName);
+                    } else {
+                        player.sendMessage(plugin.getPrefix() + ChatColor.RED + "ce joueur n'a pas été trouvé");
+                    }
+                }
+
+            } else if (cmd.getName().equals("manageEvent") && args.length >= 1 && !player.hasPermission("kanaeventmanager.event.admin")) {
+
+                if (args[0].equalsIgnoreCase("spawn") && player.hasPermission("kanaeventmanager.command.spawn")) {
+                    plugin.sendSpawn(player);
+                } else if (args[0].equalsIgnoreCase("leave") && player.hasPermission("kanaeventmanager.command.leave")) {
+                    String serverName = plugin.getConfig().getString("BungeeCord.lobbyServerName");
+                    plugin.getKbtpPlugin().send_server(player, serverName);
+                } else {
+                    player.sendMessage(plugin.getPrefix() + ChatColor.RED + "Vous n'avez pas la permission d'éxécuter cette commande");
+                }
+
+            }
+                else if (cmd.getName().equals("manageEvent")) {
+                    if (player.hasPermission("kanaeventmanager.event.admin")) {
+                        player.sendMessage(ChatColor.RED + "Args missing");
+                        player.sendMessage(ChatColor.AQUA + "DEBUG : Afficher l'aide ici !");
+                    } else {
+                        player.sendMessage(plugin.getPrefix() + ChatColor.RED + "Vous n'avez pas la permission d'éxécuter cette commande");
+                    }
             }
         }
         return false;
