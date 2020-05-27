@@ -76,6 +76,7 @@ public class DatabaseManager {
         this.getStatement().execute("CREATE TABLE IF NOT EXISTS `" + this.getEventTable() + "` (" +
                 "`id` INT NOT NULL AUTO_INCREMENT," +
                 "`Name` VARCHAR(45) NULL," +
+                "`DisplayName` VARCHAR(45) NULL," +
                 "`Broadcast` TEXT NULL," +
                 "`LocX` DOUBLE NULL," +
                 "`LocY` DOUBLE NULL," +
