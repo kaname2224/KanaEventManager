@@ -25,15 +25,23 @@ public class AutocompleteListener implements Listener {
         List<String> complete = new ArrayList<>();
 
         List<String> args1Complete = new ArrayList<>();
-        args1Complete.add("create");
-        args1Complete.add("reload");
-        args1Complete.add("start");
-        args1Complete.add("stop");
-        args1Complete.add("infos");
-        args1Complete.add("launch");
-        args1Complete.add("listPlayer");
-        args1Complete.add("forceReady");
-        args1Complete.add("leave");
+        if (event.getSender().hasPermission("kanaeventmanager.event.admin")) {
+            args1Complete.add("create");
+            args1Complete.add("reload");
+            args1Complete.add("start");
+            args1Complete.add("stop");
+            args1Complete.add("infos");
+            args1Complete.add("launch");
+            args1Complete.add("listPlayer");
+            args1Complete.add("forceReady");
+            args1Complete.add("kick");
+        }
+        if (event.getSender().hasPermission("kanaeventmanager.event.leave") || event.getSender().hasPermission("kanaeventmanager.event.admin")) {
+            args1Complete.add("leave");
+        }
+        if (event.getSender().hasPermission("kanaeventmanager.event.spawn") || event.getSender().hasPermission("kanaeventmanager.event.admin")) {
+            args1Complete.add("spawn");
+        }
 
         List<String> argsStartComplete = new ArrayList<>();
         argsStartComplete.add("-p");
