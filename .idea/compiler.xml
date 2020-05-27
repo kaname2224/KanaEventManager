@@ -2,9 +2,9 @@
 <project version="4">
   <component name="CompilerConfiguration">
     <annotationProcessing>
-      <profile name="Maven default annotation processors profile" enabled="true">
-        <sourceOutputDir name="target/generated-sources/annotations" />
-        <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
+      <profile name="Annotation profile for KanaEventManager" enabled="true">
+        <sourceOutputDir name="../../Serveurs_Mc/1.15.2/Lobby 1.15.2/plugins/generated-sources/annotations" />
+        <sourceTestOutputDir name="../../Serveurs_Mc/1.15.2/Lobby 1.15.2/plugins/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
         <module name="KanaEventManager" />
       </profile>
