@@ -10,4 +10,3 @@ commands:
     aliases:
       - event
       - e
-    permission: kanaeventmanager.manage.event

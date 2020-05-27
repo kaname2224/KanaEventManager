@@ -20,3 +20,8 @@ database:
 BungeeCord:
   lobbyServerName: "lobby"
   eventServerName: "event"
+
+SpawnPoint:
+  locX: 0
+  locY: 0
+  locZ: 0
