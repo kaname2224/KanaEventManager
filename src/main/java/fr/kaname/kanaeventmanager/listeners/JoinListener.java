@@ -26,11 +26,12 @@ public class JoinListener implements Listener {
     @EventHandler
     public void onJoin(PlayerJoinEvent event) {
 
-        if (event.getPlayer().isOp() && event.getPlayer().hasPermission("kanaeventmanager.event.bypass")) {
+        if (event.getPlayer().isOp() || event.getPlayer().hasPermission("kanaeventmanager.event.admin")) {
             checkLatestVersion(event.getPlayer());
         } else {
             event.getPlayer().getInventory().clear();
             event.getPlayer().setGameMode(GameMode.SURVIVAL);
+            plugin.sendSpawn(event.getPlayer());
         }
 
         if (plugin.getServerOpenState() != null && plugin.getServerOpenState().equalsIgnoreCase("slot")) {
@@ -47,7 +48,13 @@ public class JoinListener implements Listener {
     @EventHandler
     public void onQuit(PlayerQuitEvent event) {
         event.setQuitMessage(plugin.getPrefix() + ChatColor.AQUA + event.getPlayer().getDisplayName() + " est parti !");
-        this.updateParticipant();
+        this.deleteParticipent(event.getPlayer());
+    }
+
+    private void deleteParticipent(Player player) {
+        if (plugin.getPlayerList().contains(player.getUniqueId())) {
+            plugin.getPlayerList().remove(player.getUniqueId());
+        }
     }
 
     private void checkLatestVersion(Player player) {
@@ -83,7 +90,7 @@ public class JoinListener implements Listener {
         for (Player player : Bukkit.getOnlinePlayers()) {
             plugin.getLogger().info(player.getDisplayName());
 
-            if (!player.isOp() || !player.hasPermission("kanaeventmanager.event.bypass")) {
+            if (!player.isOp() || !player.hasPermission("kanaeventmanager.event.admin")) {
                 plugin.addEventPlayerCount();
                 plugin.getPlayerList().add(player.getUniqueId());
             }
