@@ -6,6 +6,7 @@ import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.GameMode;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -25,8 +26,11 @@ public class JoinListener implements Listener {
     @EventHandler
     public void onJoin(PlayerJoinEvent event) {
 
-        if (event.getPlayer().isOp()) {
+        if (event.getPlayer().isOp() && event.getPlayer().hasPermission("kanaeventmanager.event.bypass")) {
             checkLatestVersion(event.getPlayer());
+        } else {
+            event.getPlayer().getInventory().clear();
+            event.getPlayer().setGameMode(GameMode.SURVIVAL);
         }
 
         if (plugin.getServerOpenState() != null && plugin.getServerOpenState().equalsIgnoreCase("slot")) {
