@@ -7,6 +7,11 @@ import fr.kaname.kanaeventmanager.managers.DatabaseManager;
 import fr.kaname.kanaeventmanager.managers.EventManager;
 import fr.kaname.kanaeventmanager.managers.ServersManagers;
 import fr.kaname.kanaeventmanager.managers.eventCommandManager;
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.Location;
+import org.bukkit.World;
+import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -117,5 +122,26 @@ public class KanaEventManager extends JavaPlugin {
 
     public void setEventOwner(Player eventOwner) {
         this.eventOwner = eventOwner;
+    }
+
+    public void sendSpawn(Player player) {
+
+        FileConfiguration config = this.getConfig();
+
+        String worldName = config.getString("SpawnPoint.world");
+
+        double locX = config.getDouble("SpawnPoint.locX");
+        double locY = config.getDouble("SpawnPoint.locY");
+        double locZ = config.getDouble("SpawnPoint.locZ");
+        float pitch = Float.parseFloat(config.getString("SpawnPoint.pitch"));
+        float yaw = Float.parseFloat(config.getString("SpawnPoint.yaw"));
+        assert worldName != null;
+        World world = Bukkit.getWorld(worldName);
+
+        Location loc = new Location(world, locX, locY, locZ, yaw, pitch);
+
+
+        player.teleport(loc);
+        player.sendMessage(this.getPrefix() + ChatColor.AQUA + "vous avez été renvoyé au spawn");
     }
 }
