@@ -1,5 +1,7 @@
 package fr.kaname.kanaeventmanager;
 
+import com.google.common.io.ByteArrayDataOutput;
+import com.google.common.io.ByteStreams;
 import fr.kaname.kanabungeetp.KanaBungeeTP;
 import fr.kaname.kanaeventmanager.listeners.AutocompleteListener;
 import fr.kaname.kanaeventmanager.listeners.JoinListener;
@@ -7,6 +9,7 @@ import fr.kaname.kanaeventmanager.managers.DatabaseManager;
 import fr.kaname.kanaeventmanager.managers.EventManager;
 import fr.kaname.kanaeventmanager.managers.ServersManagers;
 import fr.kaname.kanaeventmanager.managers.eventCommandManager;
+import fr.kaname.kanaeventmanager.object.eventObject;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -46,6 +49,7 @@ public class KanaEventManager extends JavaPlugin {
         this.getCommand("event").setExecutor(new eventCommandManager(this));
         this.serversManagers = new ServersManagers(this);
         this.eventManager = new EventManager(this);
+        this.getServer().getMessenger().registerOutgoingPluginChannel(this, "BungeeCord");
     }
 
     public KanaBungeeTP getKbtpPlugin() {
@@ -143,5 +147,25 @@ public class KanaEventManager extends JavaPlugin {
 
         player.teleport(loc);
         player.sendMessage(this.getPrefix() + ChatColor.AQUA + "vous avez été renvoyé au spawn");
+    }
+
+    public void sendBroadcast(Player player, String eventName) {
+        eventObject event = this.getDatabaseManager().getEvent(eventName);
+        String text = event.getBroadcast().replace("&", "§");
+
+        String bc = getConfig().getString("Broadcast").replace("&", "§");
+
+        bc = bc.replace("{EventName}", event.getDisplayName());
+        bc = bc.replace("{Broadcast}", text);
+
+        this.getLogger().info(bc);
+
+        ByteArrayDataOutput out = ByteStreams.newDataOutput();
+
+        out.writeUTF("Message");
+        out.writeUTF("ALL");
+        out.writeUTF(bc);
+
+        player.sendPluginMessage(this, "BungeeCord", out.toByteArray());
     }
 }

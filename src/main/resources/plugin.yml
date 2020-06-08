@@ -1,12 +1,12 @@
 name: KanaEventManager
 author: Kaname
-version: 2.0.5
+version: 2.1.0
 main: fr.kaname.kanaeventmanager.KanaEventManager
 depend:
   - KanaBungeeTP
 
 commands:
-  manageEvent:
+  manageevent:
     aliases:
       - event
       - e

@@ -103,12 +103,13 @@ public class DatabaseManager {
             ResultSet datas = this.getStatement().executeQuery("SELECT * FROM " + this.getEventTable() + " WHERE `Name` = '" + eventName + "'");
             if (datas.next()) {
 
-                String broadcast = datas.getString(3);
-                Double locX = datas.getDouble(4);
-                Double locY = datas.getDouble(5);
-                Double locZ = datas.getDouble(6);
+                String broadcast = datas.getString("Broadcast");
+                String displayName = datas.getString("DisplayName");
+                Double locX = datas.getDouble("LocX");
+                Double locY = datas.getDouble("LocY");
+                Double locZ = datas.getDouble("LocZ");
 
-                event = new eventObject(eventName, broadcast, locX, locY, locZ);
+                event = new eventObject(eventName, broadcast, locX, locY, locZ, displayName);
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -116,10 +117,10 @@ public class DatabaseManager {
         return event;
     }
 
-    public void createEvent(String Name, String Broadcast, Double LocX, Double LocY, Double LocZ) {
+    public void createEvent(String Name, String displayName, String Broadcast, Double LocX, Double LocY, Double LocZ) {
         try {
-            this.getStatement().execute("INSERT INTO " + this.getEventTable() + "(`Name`, `Broadcast`, `LocX`, `LocY`, `LocZ`)" +
-                    "VALUES ('" + Name + "','" + Broadcast + "','" + LocX + "','" + LocY + "','" + LocZ + "')");
+            this.getStatement().execute("INSERT INTO " + this.getEventTable() + "(`Name`, `DisplayName`, `Broadcast`, `LocX`, `LocY`, `LocZ`)" +
+                    "VALUES ('" + Name + "','" + displayName + "','" + Broadcast + "','" + LocX + "','" + LocY + "','" + LocZ + "')");
         } catch (SQLException e) {
             e.printStackTrace();
         }

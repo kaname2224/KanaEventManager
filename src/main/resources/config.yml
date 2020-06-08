@@ -1,7 +1,7 @@
 
 # KanaEventManager Add-on to KanaBungeeTP
-# KanaEventManager Version 2.0.3
-# KanaBungeeTP required Version 2.0.1
+# KanaEventManager Version 2.1.0
+# KanaBungeeTP required Version 2.0.1 or above
 
 # If database doesn't work plugin will be disable
 
@@ -25,3 +25,5 @@ SpawnPoint:
   locX: 0
   locY: 0
   locZ: 0
+
+Broadcast: "&9[EVENT {EventName}] &6{Broadcast} \n&epour participer faîtes &a/bmenu"

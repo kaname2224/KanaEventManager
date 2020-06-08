@@ -21,7 +21,7 @@ public class AutocompleteListener implements Listener {
     @EventHandler
     public void onTabComplete(TabCompleteEvent event) {
         String command = event.getBuffer().replace("/", "");
-        List<String> eventAliases = plugin.getCommand("manageEvent").getAliases();
+        List<String> eventAliases = plugin.getCommand("manageevent").getAliases();
         List<String> complete = new ArrayList<>();
 
         List<String> args1Complete = new ArrayList<>();
@@ -36,10 +36,10 @@ public class AutocompleteListener implements Listener {
             args1Complete.add("forceReady");
             args1Complete.add("kick");
         }
-        if (event.getSender().hasPermission("kanaeventmanager.event.leave") || event.getSender().hasPermission("kanaeventmanager.event.admin")) {
+        if (event.getSender().hasPermission("kanaeventmanager.command.leave") || event.getSender().hasPermission("kanaeventmanager.event.admin")) {
             args1Complete.add("leave");
         }
-        if (event.getSender().hasPermission("kanaeventmanager.event.spawn") || event.getSender().hasPermission("kanaeventmanager.event.admin")) {
+        if (event.getSender().hasPermission("kanaeventmanager.command.spawn") || event.getSender().hasPermission("kanaeventmanager.event.admin")) {
             args1Complete.add("spawn");
         }
 
@@ -50,6 +50,11 @@ public class AutocompleteListener implements Listener {
         if (event.getSender() instanceof Player) {
             Player player = (Player) event.getSender();
             for (String aliase : eventAliases) {
+
+                if (!command.startsWith(aliase)) {
+                    return;
+                }
+
                 if (command.startsWith(aliase)) {
                     for (String arg : args1Complete) {
                         String cmdComplete = aliase + " " + arg;
@@ -98,8 +103,8 @@ public class AutocompleteListener implements Listener {
                         }
                     }
                 }
+                event.setCompletions(complete);
             }
-            event.setCompletions(complete);
         }
     }
 }

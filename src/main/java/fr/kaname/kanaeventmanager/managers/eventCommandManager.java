@@ -25,7 +25,7 @@ public class eventCommandManager implements CommandExecutor {
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String msg, String[] args) {
 
-        if (cmd.getName().equalsIgnoreCase("manageEvent") && args.length >= 1) {
+        if (cmd.getName().equalsIgnoreCase("manageevent") && args.length >= 1) {
             if (args[0].equalsIgnoreCase("reload")) {
                 plugin.reloadConfig();
                 sender.sendMessage(plugin.getPrefix() + ChatColor.AQUA + "Config Reloaded");
@@ -34,28 +34,74 @@ public class eventCommandManager implements CommandExecutor {
 
         if (sender instanceof Player) {
             Player player = (Player) sender;
-            if (cmd.getName().equals("manageEvent") && args.length >= 1 && player.hasPermission("kanaeventmanager.event.admin")) {
+            if (cmd.getName().equalsIgnoreCase("manageevent") && args.length >= 1 && player.hasPermission("kanaeventmanager.event.admin")) {
                 if (args[0].equalsIgnoreCase("launch")) {
                     plugin.getEventManager().launchEvent(player);
                 }
                 if (args[0].equalsIgnoreCase("stop")) {
                    plugin.getEventManager().stopEvent(player);
                 }
-                if (args[0].equalsIgnoreCase("create") && args.length >= 3) {
+                if (args[0].equalsIgnoreCase("create") && args.length >= 4) {
                     String name = args[1];
+
                     if (!plugin.getDatabaseManager().getEventList().contains(name)) {
+
+                        int index = 2;
+                        String displayName = "";
+
+                        if (args[2].startsWith("\"")) {
+                            plugin.getLogger().info("TRUE");
+
+                            for (int i = index; i < args.length; i++) {
+
+                                if ((i + 1) >= args.length) {
+                                    player.sendMessage(plugin.getPrefix() + ChatColor.AQUA + "Pour créer un event faîtes §9/event name \"display name\" \"broadcast\"");
+                                    return false;
+                                }
+
+                                if (args[i].endsWith("\"")) {
+                                    displayName += args[i];
+                                    index = i + 1;
+                                    break;
+                                } else {
+                                    displayName += args[i] + " ";
+                                }
+                            }
+
+                        } else {
+                            player.sendMessage(plugin.getPrefix() + ChatColor.AQUA + "Pour créer un event faîtes §9/event name \"display name\" \"broadcast\"");
+                            return false;
+                        }
+
                         String broadcast = "";
-                        for (int i = 3; i <= args.length; i++) {
-                            if (i == args.length) {
-                                broadcast += args[i - 1];
+
+                        if (!args[index].startsWith("\"")) {
+                            player.sendMessage(plugin.getPrefix() + ChatColor.AQUA + "Pour créer un event faîtes §9/event name \"display name\" \"broadcast\"");
+                            return false;
+                        }
+
+                        for (int i = index; i < args.length; i++) {
+                            if (i + 1 == args.length) {
+                                broadcast += args[i];
                             } else {
-                                broadcast += args[i - 1] + " ";
+                                broadcast += args[i] + " ";
                             }
                         }
+
                         Location location = player.getLocation();
                         plugin.getLogger().info("Creating new event : " + name);
                         player.sendMessage(plugin.getPrefix() + ChatColor.AQUA + "Creating new event : " + name);
-                        plugin.getDatabaseManager().createEvent(name, broadcast, location.getX(), location.getY(), location.getZ());
+
+                        broadcast = broadcast.replace("\"", "");
+                        displayName = displayName.replace("\"", "");
+
+                        broadcast = broadcast.replace("'", "\\'");
+                        displayName = displayName.replace("'", "\\'");
+
+                        plugin.getLogger().info(broadcast);
+                        plugin.getLogger().info(displayName);
+
+                        plugin.getDatabaseManager().createEvent(name, displayName, broadcast, location.getX(), location.getY(), location.getZ());
                     } else {
                         player.sendMessage(plugin.getPrefix() + ChatColor.AQUA + "This event name is already in use !");
                     }
@@ -97,7 +143,6 @@ public class eventCommandManager implements CommandExecutor {
                         try {
                             amount = Integer.parseInt(args[3], 10);
                         } catch (NumberFormatException exept) {
-                            amount = -1;
                             player.sendMessage(plugin.getPrefix() + ChatColor.RED + "Vous devez spécifier un nombre entier positif ! Pas du texte !");
                             return false;
                         }
@@ -119,6 +164,8 @@ public class eventCommandManager implements CommandExecutor {
                             } else if (arg.equalsIgnoreCase("-p")) {
                                 plugin.getServersManagers().SlotOpenedServer(amount, player, eventName);
                             }
+
+                            plugin.sendBroadcast(player, eventName);
 
                         } else {
                             player.sendMessage(plugin.getPrefix() + ChatColor.RED + "Vous ne pouvez pas définir un nombre null");
