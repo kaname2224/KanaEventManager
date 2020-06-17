@@ -1,7 +1,7 @@
 package fr.kaname.kanaeventmanager.listeners;
 
-import fr.kaname.kanabungeetp.KanaBungeeTP;
 import fr.kaname.kanaeventmanager.KanaEventManager;
+import fr.kaname.kanaeventmanager.object.eventObject;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.Bukkit;
@@ -16,11 +16,9 @@ import org.bukkit.event.player.PlayerQuitEvent;
 public class JoinListener implements Listener {
 
     private KanaEventManager plugin;
-    private KanaBungeeTP kanaBungeeTP;
 
     public JoinListener(KanaEventManager kanaEventManager) {
         this.plugin = kanaEventManager;
-        this.kanaBungeeTP = kanaEventManager.getKbtpPlugin();
     }
 
     @EventHandler
@@ -34,14 +32,19 @@ public class JoinListener implements Listener {
             plugin.sendSpawn(event.getPlayer());
         }
 
-        if (plugin.getServerOpenState() != null && plugin.getServerOpenState().equalsIgnoreCase("slot")) {
-            this.updateParticipant();
-            event.setJoinMessage(plugin.getPrefix() + ChatColor.AQUA + event.getPlayer().getDisplayName() + " a rejoins l'event "+ plugin.getActualEventName() +" (" + plugin.getEventPlayerCount() + "/" + plugin.getSlot() + ")");
-        } else if (plugin.getActualEventName() != null) {
-            event.setJoinMessage(plugin.getPrefix() + ChatColor.AQUA + event.getPlayer().getDisplayName() + " a rejoins l'event " + plugin.getActualEventName());
-            this.updateParticipant();
+        if (plugin.getActualEventName() != null) {
+            eventObject actualEvent = plugin.getDatabaseManager().getEvent(plugin.getActualEventName());
+
+            if (plugin.getServerOpenState().equalsIgnoreCase("slot")) {
+                this.updateParticipant();
+                event.setJoinMessage(plugin.getPrefix() + ChatColor.AQUA + event.getPlayer().getDisplayName() + " a rejoins l'event " + plugin.getActualEventName() + " (" + plugin.getEventPlayerCount() + "/" + plugin.getSlot() + ")");
+            } else if (plugin.getServerOpenState().equalsIgnoreCase("time")) {
+                event.setJoinMessage(plugin.getPrefix() + ChatColor.AQUA + event.getPlayer().getDisplayName() + " a rejoins l'event " + plugin.getActualEventName());
+                this.updateParticipant();
+            }
+
         } else {
-            event.setJoinMessage(ChatColor.BLUE + "[+] " + ChatColor.AQUA + event.getPlayer().getDisplayName());
+                event.setJoinMessage(ChatColor.BLUE + "[+] " + ChatColor.AQUA + event.getPlayer().getDisplayName());
         }
     }
 

@@ -151,6 +151,9 @@ public class KanaEventManager extends JavaPlugin {
 
     public void sendBroadcast(Player player, String eventName) {
         eventObject event = this.getDatabaseManager().getEvent(eventName);
+        if (event == null) {
+            player.sendMessage(this.getPrefix() + ChatColor.RED + "Cet event n'a pas été trouvé !");
+        }
         String text = event.getBroadcast().replace("&", "§");
 
         String bc = getConfig().getString("Broadcast").replace("&", "§");

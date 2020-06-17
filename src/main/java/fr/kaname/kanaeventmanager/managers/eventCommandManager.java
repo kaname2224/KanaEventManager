@@ -269,6 +269,10 @@ public class eventCommandManager implements CommandExecutor {
                     }
                 }
 
+                if (args[0].equalsIgnoreCase("broadcast") && args.length >= 2 || args[0].equalsIgnoreCase("bc") && args.length >= 2) {
+                    plugin.sendBroadcast(player, args[1]);
+                }
+
             } else if (cmd.getName().equals("manageEvent") && args.length >= 1 && !player.hasPermission("kanaeventmanager.event.admin")) {
 
                 if (args[0].equalsIgnoreCase("spawn") && player.hasPermission("kanaeventmanager.command.spawn")) {
