@@ -9,6 +9,7 @@ import fr.kaname.kanaeventmanager.managers.DatabaseManager;
 import fr.kaname.kanaeventmanager.managers.EventManager;
 import fr.kaname.kanaeventmanager.managers.ServersManagers;
 import fr.kaname.kanaeventmanager.managers.eventCommandManager;
+import fr.kaname.kanaeventmanager.object.PapiExpansion;
 import fr.kaname.kanaeventmanager.object.eventObject;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -20,6 +21,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 
 public class KanaEventManager extends JavaPlugin {
@@ -40,6 +42,7 @@ public class KanaEventManager extends JavaPlugin {
     @Override
     public void onEnable() {
         saveDefaultConfig();
+        new PapiExpansion(this).register();
         this.getLogger().info("Plugin Enabled !");
         this.db = new DatabaseManager(this);
         this.db.ConnectDatabase();
@@ -72,10 +75,6 @@ public class KanaEventManager extends JavaPlugin {
 
     public String getActualEventName() {
         return ActualEventName;
-    }
-
-    public boolean isServerEventOpen() {
-        return isServerEventOpen;
     }
 
     public String getServerOpenState() {
@@ -137,8 +136,8 @@ public class KanaEventManager extends JavaPlugin {
         double locX = config.getDouble("SpawnPoint.locX");
         double locY = config.getDouble("SpawnPoint.locY");
         double locZ = config.getDouble("SpawnPoint.locZ");
-        float pitch = Float.parseFloat(config.getString("SpawnPoint.pitch"));
-        float yaw = Float.parseFloat(config.getString("SpawnPoint.yaw"));
+        float pitch = Float.parseFloat(Objects.requireNonNull(config.getString("SpawnPoint.pitch")));
+        float yaw = Float.parseFloat(Objects.requireNonNull(config.getString("SpawnPoint.yaw")));
         assert worldName != null;
         World world = Bukkit.getWorld(worldName);
 
@@ -153,6 +152,7 @@ public class KanaEventManager extends JavaPlugin {
         eventObject event = this.getDatabaseManager().getEvent(eventName);
         if (event == null) {
             player.sendMessage(this.getPrefix() + ChatColor.RED + "Cet event n'a pas été trouvé !");
+            return;
         }
         String text = event.getBroadcast().replace("&", "§");
 

@@ -5,8 +5,10 @@ import fr.kaname.kanaeventmanager.object.eventObject;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 
+import java.util.List;
 import java.util.UUID;
 
 public class EventManager {
@@ -68,5 +70,18 @@ public class EventManager {
 
         plugin.resetPlayerList();
         player.sendMessage(plugin.getPrefix() + ChatColor.AQUA + "Event fermé !");
+    }
+
+    public void setWinners(List<OfflinePlayer> winners, Player sender) {
+
+        if (!plugin.isEvent()) {
+            sender.sendMessage(plugin.getPrefix() + ChatColor.RED + "Il n'y a pas d'event en cours");
+            return;
+        }
+
+        for (OfflinePlayer winner : winners) {
+            plugin.getDatabaseManager().incrementScore(winner);
+        }
+        this.stopEvent(plugin.getEventOwner());
     }
 }
