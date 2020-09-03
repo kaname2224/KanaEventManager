@@ -10,8 +10,8 @@
     </facet>
   </component>
   <component name="NewModuleRootManager" LANGUAGE_LEVEL="JDK_1_8">
-    <output url="file://$USER_HOME$/Documents/Programmation/javaPluginMc/Serveurs_Mc/1.15.2/Lobby 1.15.2/plugins/classes" />
-    <output-test url="file://$USER_HOME$/Documents/Programmation/javaPluginMc/Serveurs_Mc/1.15.2/Lobby 1.15.2/plugins/test-classes" />
+    <output url="file://$MODULE_DIR$/target/classes" />
+    <output-test url="file://$MODULE_DIR$/target/test-classes" />
     <content url="file://$MODULE_DIR$">
       <sourceFolder url="file://$MODULE_DIR$/src/main/java" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/src/main/resources" type="java-resource" />

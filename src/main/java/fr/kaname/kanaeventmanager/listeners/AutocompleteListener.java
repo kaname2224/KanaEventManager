@@ -106,7 +106,7 @@ public class AutocompleteListener implements Listener {
                     }
                 }
 
-                if(command.startsWith(aliase + " setLobbyServer")) {
+                if(command.startsWith(aliase + " winner")) {
                     complete.clear();
                     for (Player p : Bukkit.getOnlinePlayers()) {
 
