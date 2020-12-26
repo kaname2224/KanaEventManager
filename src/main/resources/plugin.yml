@@ -1,9 +1,12 @@
 name: KanaEventManager
 author: Kaname
-version: 2.1.0
+version: 2.3.0
 main: fr.kaname.kanaeventmanager.KanaEventManager
+api-version: "1.16"
 depend:
   - KanaBungeeTP
+  - PlaceholderAPI
+  - Vault
 
 commands:
   manageevent:

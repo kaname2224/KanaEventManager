@@ -2,6 +2,7 @@ package fr.kaname.kanaeventmanager.listeners;
 
 import fr.kaname.kanabungeetp.objects.Servers;
 import fr.kaname.kanaeventmanager.KanaEventManager;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -35,6 +36,7 @@ public class AutocompleteListener implements Listener {
             args1Complete.add("listPlayer");
             args1Complete.add("forceReady");
             args1Complete.add("kick");
+            args1Complete.add("winner");
         }
         if (event.getSender().hasPermission("kanaeventmanager.command.leave") || event.getSender().hasPermission("kanaeventmanager.event.admin")) {
             args1Complete.add("leave");
@@ -100,6 +102,17 @@ public class AutocompleteListener implements Listener {
                         String cmdComplete = aliase + " setLobbyServer " + serverName.toLowerCase();
                         if (cmdComplete.toLowerCase().contains(command.toLowerCase())) {
                             complete.add(serverName);
+                        }
+                    }
+                }
+
+                if(command.startsWith(aliase + " winner")) {
+                    complete.clear();
+                    for (Player p : Bukkit.getOnlinePlayers()) {
+
+                        String cmdComplete = aliase + " setLobbyServer " + p.getName().toLowerCase();
+                        if (cmdComplete.toLowerCase().contains(command.toLowerCase())) {
+                            complete.add(p.getName());
                         }
                     }
                 }

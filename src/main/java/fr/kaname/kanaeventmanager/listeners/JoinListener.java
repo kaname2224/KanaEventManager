@@ -2,6 +2,7 @@ package fr.kaname.kanaeventmanager.listeners;
 
 import fr.kaname.kanaeventmanager.KanaEventManager;
 import fr.kaname.kanaeventmanager.object.eventObject;
+import fr.kaname.kanaeventmanager.object.playerRank;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.Bukkit;
@@ -13,6 +14,10 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
+
 public class JoinListener implements Listener {
 
     private KanaEventManager plugin;
@@ -23,6 +28,12 @@ public class JoinListener implements Listener {
 
     @EventHandler
     public void onJoin(PlayerJoinEvent event) {
+
+        List<UUID> listUUID = plugin.getDatabaseManager().getPlayerStored();
+
+        if (!listUUID.contains(event.getPlayer().getUniqueId())) {
+            plugin.getDatabaseManager().createPlayerScore(event.getPlayer());
+        }
 
         if (event.getPlayer().isOp() || event.getPlayer().hasPermission("kanaeventmanager.event.admin")) {
             checkLatestVersion(event.getPlayer());
@@ -91,8 +102,6 @@ public class JoinListener implements Listener {
         plugin.resetPlayerList();
 
         for (Player player : Bukkit.getOnlinePlayers()) {
-            plugin.getLogger().info(player.getDisplayName());
-
             if (!player.isOp() || !player.hasPermission("kanaeventmanager.event.admin")) {
                 plugin.addEventPlayerCount();
                 plugin.getPlayerList().add(player.getUniqueId());

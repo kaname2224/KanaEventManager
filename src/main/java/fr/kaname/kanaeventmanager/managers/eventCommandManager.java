@@ -5,11 +5,15 @@ import fr.kaname.kanaeventmanager.KanaEventManager;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.UUID;
 
 public class eventCommandManager implements CommandExecutor {
@@ -273,6 +277,38 @@ public class eventCommandManager implements CommandExecutor {
                     plugin.sendBroadcast(player, args[1]);
                 }
 
+                if (args[0].equalsIgnoreCase("winner") && args.length >= 2) {
+                    List<String> winnersPseudo = new ArrayList<>(Arrays.asList(args));
+                    List<String> offlineWinnersPseudo = new ArrayList<>();
+                    List<OfflinePlayer> winners = new ArrayList<>();
+                    if (winnersPseudo.size() >= 1) {
+                        for (String pseudo : winnersPseudo) {
+                            Player winner = Bukkit.getPlayerExact(pseudo);
+                            if (winner != null) {
+                                Bukkit.broadcastMessage("PLAYER : " + winner.getUniqueId().toString());
+                                winners.add(winner);
+                            } else {
+                                offlineWinnersPseudo.add(pseudo);
+                            }
+                        }
+
+                        String lastPseudo = offlineWinnersPseudo.get(offlineWinnersPseudo.size() - 1);
+                        for (OfflinePlayer offlinePlayer : Bukkit.getOfflinePlayers()) {
+                            for (String pseudo : offlineWinnersPseudo) {
+                                if (offlinePlayer.getName().equals(pseudo)) {
+                                    winners.add(offlinePlayer);
+                                    if (pseudo.equalsIgnoreCase(lastPseudo)) {
+                                        break;
+                                    }
+                                }
+                            }
+                        }
+
+                        plugin.getEventManager().setWinners(winners, player);
+
+                    }
+                }
+
             } else if (cmd.getName().equals("manageEvent") && args.length >= 1 && !player.hasPermission("kanaeventmanager.event.admin")) {
 
                 if (args[0].equalsIgnoreCase("spawn") && player.hasPermission("kanaeventmanager.command.spawn")) {
@@ -290,7 +326,7 @@ public class eventCommandManager implements CommandExecutor {
                         player.sendMessage(ChatColor.RED + "Args missing");
                         player.sendMessage(ChatColor.AQUA + "DEBUG : Afficher l'aide ici !");
                     } else {
-                        player.sendMessage(plugin.getPrefix() + ChatColor.RED + "Vous n'avez pas la permission d'éxécuter cette commande");
+                        player.sendMessage(plugin.getPrefix() + ChatColor.RED + "Vous n'avez pas la permission d'exécuter cette commande");
                     }
             }
         }

@@ -1,19 +1,19 @@
-
 # KanaEventManager Add-on to KanaBungeeTP
-# KanaEventManager Version 2.1.0
-# KanaBungeeTP required Version 2.0.1 or above
+# KanaEventManager Version 2.3.0
+# KanaBungeeTP required Version 2.2.2 or above (compatible 2.0.1 but not recommended)
 
-# If database doesn't work plugin will be disable
+# If database doesn't work plugin will be stop working unexpectedly
 
 database:
   host: "127.0.0.1"
-  user: "root"
-  password: "sqldevtest"
-  database: "test"
+  user: ""
+  password: ""
+  database: ""
   port: "3306"
 
   tables:
     event: "KEM_event"
+    score: "KEM_score"
 
 # Server configuration for BungeeCord (specifies the bungee's config.yml server's name)
 
@@ -21,9 +21,16 @@ BungeeCord:
   lobbyServerName: "lobby"
   eventServerName: "event"
 
+# Auto spawn point at connexion
 SpawnPoint:
   locX: 0
   locY: 0
   locZ: 0
+  pitch: 0
+  yaw: 0
 
+# Auto check score table (second)
+AutoCheckScoreIntervall: 60
+
+# Broadcast for event
 Broadcast: "&9[EVENT {EventName}] &6{Broadcast} \n&epour participer faîtes &a/bmenu"
