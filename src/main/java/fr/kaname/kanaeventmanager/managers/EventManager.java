@@ -6,17 +6,48 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.OfflinePlayer;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 public class EventManager {
 
     private KanaEventManager plugin;
+    private Map<String, List<String>> rewardsMap = new HashMap<>();
+    private String rewardMsg;
+    private int rewardPing;
 
     public EventManager(KanaEventManager kanaEventManager) {
         this.plugin = kanaEventManager;
+        this.getConfigRewards();
+    }
+
+    private void getConfigRewards() {
+
+        this.rewardsMap.clear();
+        ConfigurationSection rewardsSection = plugin.getConfig().getConfigurationSection("rewards");
+        this.rewardMsg = plugin.getConfig().getString("WinBroadcast");
+        this.rewardPing = plugin.getConfig().getInt("rewardsPing");
+
+        if (rewardsSection == null) {
+            return;
+        }
+
+        for (String section : rewardsSection.getKeys(false)) {
+
+            List<String> rewardsOption = new ArrayList<>();
+
+            String command = rewardsSection.getString(section + ".command");
+            String displayName = rewardsSection.getString(section + ".displayName");
+
+            rewardsOption.add(command);
+            rewardsOption.add(displayName);
+
+            this.rewardsMap.put(section, rewardsOption);
+
+        }
+
     }
 
     public void launchEvent(Player player) {
@@ -72,16 +103,29 @@ public class EventManager {
         player.sendMessage(plugin.getPrefix() + ChatColor.AQUA + "Event fermé !");
     }
 
-    public void setWinners(List<OfflinePlayer> winners, Player sender) {
+    public void setWinners(List<OfflinePlayer> winners, Player sender, List<String> rewards) {
 
         if (!plugin.isEvent()) {
             sender.sendMessage(plugin.getPrefix() + ChatColor.RED + "Il n'y a pas d'event en cours");
             return;
         }
 
+        List<String> commandsList = new ArrayList<>();
+        List<String> rewardDisplayNameList = new ArrayList<>();
+
+        for (String rewardKey : rewards) {
+            commandsList.add(this.rewardsMap.get(rewardKey).get(0));
+            rewardDisplayNameList.add(this.rewardsMap.get(rewardKey).get(1));
+        }
+
+        this.stopEvent(plugin.getEventOwner());
+
         for (OfflinePlayer winner : winners) {
             plugin.getDatabaseManager().incrementScore(winner);
+            // ! Faire les plugins messages
         }
-        this.stopEvent(plugin.getEventOwner());
+
+        this.rewardMsg = this.rewardMsg.replace("{EventName}", plugin.getActualEventName());
+
     }
 }

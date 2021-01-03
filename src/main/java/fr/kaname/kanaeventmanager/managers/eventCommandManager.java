@@ -278,35 +278,27 @@ public class eventCommandManager implements CommandExecutor {
                 }
 
                 if (args[0].equalsIgnoreCase("winner") && args.length >= 2) {
-                    List<String> winnersPseudo = new ArrayList<>(Arrays.asList(args));
-                    List<String> offlineWinnersPseudo = new ArrayList<>();
                     List<OfflinePlayer> winners = new ArrayList<>();
-                    if (winnersPseudo.size() >= 1) {
-                        for (String pseudo : winnersPseudo) {
-                            Player winner = Bukkit.getPlayerExact(pseudo);
-                            if (winner != null) {
-                                Bukkit.broadcastMessage("PLAYER : " + winner.getUniqueId().toString());
-                                winners.add(winner);
-                            } else {
-                                offlineWinnersPseudo.add(pseudo);
-                            }
-                        }
+                    List<String> rewards = new ArrayList<>();
+                    List<String> arguments = new ArrayList<>(Arrays.asList(args));
+                    arguments.remove(0);
+                    boolean isRewards = false;
 
-                        String lastPseudo = offlineWinnersPseudo.get(offlineWinnersPseudo.size() - 1);
-                        for (OfflinePlayer offlinePlayer : Bukkit.getOfflinePlayers()) {
-                            for (String pseudo : offlineWinnersPseudo) {
-                                if (offlinePlayer.getName().equals(pseudo)) {
-                                    winners.add(offlinePlayer);
-                                    if (pseudo.equalsIgnoreCase(lastPseudo)) {
-                                        break;
-                                    }
-                                }
-                            }
-                        }
+                    for (String arg : arguments) {
 
-                        plugin.getEventManager().setWinners(winners, player);
+                        if (!arg.equalsIgnoreCase("rewards") && !isRewards) {
+
+                            OfflinePlayer op = Bukkit.getPlayerExact(arg);
+                            winners.add(op);
+
+                        } else if (arg.equalsIgnoreCase("rewards") &&  !isRewards){
+                            isRewards = true;
+                        } else {
+                            rewards.add(arg);
+                        }
 
                     }
+                    plugin.getEventManager().setWinners(winners, player, rewards);
                 }
 
             } else if (cmd.getName().equals("manageEvent") && args.length >= 1 && !player.hasPermission("kanaeventmanager.event.admin")) {

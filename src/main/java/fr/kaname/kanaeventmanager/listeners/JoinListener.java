@@ -40,6 +40,7 @@ public class JoinListener implements Listener {
         } else {
             event.getPlayer().getInventory().clear();
             event.getPlayer().setGameMode(GameMode.SURVIVAL);
+            event.getPlayer().getActivePotionEffects().clear();
             plugin.sendSpawn(event.getPlayer());
         }
 
