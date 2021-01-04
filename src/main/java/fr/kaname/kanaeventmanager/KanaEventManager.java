@@ -5,10 +5,7 @@ import com.google.common.io.ByteStreams;
 import fr.kaname.kanabungeetp.KanaBungeeTP;
 import fr.kaname.kanaeventmanager.listeners.AutocompleteListener;
 import fr.kaname.kanaeventmanager.listeners.JoinListener;
-import fr.kaname.kanaeventmanager.managers.DatabaseManager;
-import fr.kaname.kanaeventmanager.managers.EventManager;
-import fr.kaname.kanaeventmanager.managers.ServersManagers;
-import fr.kaname.kanaeventmanager.managers.eventCommandManager;
+import fr.kaname.kanaeventmanager.managers.*;
 import fr.kaname.kanaeventmanager.object.PapiExpansion;
 import fr.kaname.kanaeventmanager.object.eventObject;
 import org.bukkit.Bukkit;
@@ -38,6 +35,7 @@ public class KanaEventManager extends JavaPlugin {
     private int eventPlayerCount;
     private List<UUID> playerList = new ArrayList<>();
     private Player eventOwner;
+    private PluginMessageManager pluginMessageManager;
 
     @Override
     public void onEnable() {
@@ -52,6 +50,7 @@ public class KanaEventManager extends JavaPlugin {
         this.getCommand("event").setExecutor(new eventCommandManager(this));
         this.serversManagers = new ServersManagers(this);
         this.eventManager = new EventManager(this);
+        this.pluginMessageManager = new PluginMessageManager(this);
         this.getServer().getMessenger().registerOutgoingPluginChannel(this, "BungeeCord");
     }
 
@@ -108,6 +107,10 @@ public class KanaEventManager extends JavaPlugin {
     public int getEventPlayerCount() { return this.eventPlayerCount; }
 
     public void setSlot(int amount) { this.slot = amount; }
+
+    public PluginMessageManager getPluginMessageManager() {
+        return pluginMessageManager;
+    }
 
     public int getSlot() {return this.slot; }
 
@@ -168,6 +171,21 @@ public class KanaEventManager extends JavaPlugin {
         out.writeUTF("Message");
         out.writeUTF("ALL");
         out.writeUTF(bc);
+
+        player.sendPluginMessage(this, "BungeeCord", out.toByteArray());
+    }
+
+    public void sendWinBroadcast(Player player, String text) {
+
+        text = text.replace("&", "§");
+
+        this.getLogger().info(text);
+
+        ByteArrayDataOutput out = ByteStreams.newDataOutput();
+
+        out.writeUTF("Message");
+        out.writeUTF("ALL");
+        out.writeUTF(text);
 
         player.sendPluginMessage(this, "BungeeCord", out.toByteArray());
     }

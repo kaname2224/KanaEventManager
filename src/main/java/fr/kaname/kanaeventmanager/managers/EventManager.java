@@ -27,7 +27,7 @@ public class EventManager {
 
         this.rewardsMap.clear();
         ConfigurationSection rewardsSection = plugin.getConfig().getConfigurationSection("rewards");
-        this.rewardMsg = plugin.getConfig().getString("WinBroadcast");
+        this.rewardMsg = plugin.getConfig().getString("SingleWinBroadcast");
         this.rewardPing = plugin.getConfig().getInt("rewardsPing");
 
         if (rewardsSection == null) {
@@ -113,19 +113,31 @@ public class EventManager {
         List<String> commandsList = new ArrayList<>();
         List<String> rewardDisplayNameList = new ArrayList<>();
 
-        for (String rewardKey : rewards) {
+        for (String rewardFull : rewards) {
+            String rewardKey = rewardFull.split("-")[0];
+            int rewardamount = Integer.parseInt(rewardFull.split("-")[1]);
             commandsList.add(this.rewardsMap.get(rewardKey).get(0));
             rewardDisplayNameList.add(this.rewardsMap.get(rewardKey).get(1));
         }
+
+        String eventName = plugin.getActualEventName();
 
         this.stopEvent(plugin.getEventOwner());
 
         for (OfflinePlayer winner : winners) {
             plugin.getDatabaseManager().incrementScore(winner);
-            // ! Faire les plugins messages
+            Bukkit.getScheduler().runTaskLaterAsynchronously(plugin, () -> {
+
+                for (String command : commandsList) {
+                    plugin.getPluginMessageManager().sendBukkitCommand("say " + command, sender);
+                }
+
+            }, 20*rewardPing);
         }
 
-        this.rewardMsg = this.rewardMsg.replace("{EventName}", plugin.getActualEventName());
+        this.rewardMsg = this.rewardMsg.replace("{EventName}", eventName);
+
+        plugin.sendWinBroadcast(sender, this.rewardMsg);
 
     }
 }

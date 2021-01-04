@@ -117,7 +117,7 @@ public class JoinListener implements Listener {
             plugin.getKbtpPlugin().closeServer(eventServerName);
             plugin.setServerEventOpen(false);
             plugin.setServerOpenState("ready");
-            plugin.getEventOwner().sendMessage(plugin.getPrefix() + ChatColor.AQUA + "Le nombre de joueur requis a été atteind\n" +
+            plugin.getEventOwner().sendMessage(plugin.getPrefix() + ChatColor.AQUA + "Le nombre de joueur requis a été atteinds\n" +
                     "tapez §6/event launch pour commencer");
         }
     }
