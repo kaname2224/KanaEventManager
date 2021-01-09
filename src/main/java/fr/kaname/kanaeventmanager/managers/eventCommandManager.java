@@ -137,13 +137,19 @@ public class eventCommandManager implements CommandExecutor {
                         return false;
                     }
 
-                    String arg = null;
-                    int amount = -1;
+                    String arg;
+                    int amount;
+                    boolean isBetaEvent = false;
                     String eventName = args[1];
                     plugin.setEventOwner(player);
 
                     if (args.length >= 4) {
                         arg = args[2];
+                        if (args.length >= 5) {
+                            if (args[4].equalsIgnoreCase("-b")) {
+                                isBetaEvent = true;
+                            }
+                        }
                         try {
                             amount = Integer.parseInt(args[3], 10);
                         } catch (NumberFormatException exept) {
@@ -169,10 +175,10 @@ public class eventCommandManager implements CommandExecutor {
                                 plugin.getServersManagers().SlotOpenedServer(amount, player, eventName);
                             }
 
-                            plugin.sendBroadcast(player, eventName);
+                            plugin.sendBroadcast(player, eventName, isBetaEvent);
 
                         } else {
-                            player.sendMessage(plugin.getPrefix() + ChatColor.RED + "Vous ne pouvez pas définir un nombre null");
+                            player.sendMessage(plugin.getPrefix() + ChatColor.RED + "Vous ne pouvez pas définir un nombre nul");
                             return false;
                         }
                     }
@@ -274,7 +280,13 @@ public class eventCommandManager implements CommandExecutor {
                 }
 
                 if (args[0].equalsIgnoreCase("broadcast") && args.length >= 2 || args[0].equalsIgnoreCase("bc") && args.length >= 2) {
-                    plugin.sendBroadcast(player, args[1]);
+                    boolean isBetaEvent = false;
+                    if (args.length >= 3) {
+                        if (args[2].equalsIgnoreCase("-b")) {
+                            isBetaEvent = true;
+                        }
+                    }
+                    plugin.sendBroadcast(player, args[1], isBetaEvent);
                 }
 
                 if (args[0].equalsIgnoreCase("winner") && args.length >= 2) {
@@ -298,7 +310,11 @@ public class eventCommandManager implements CommandExecutor {
                         }
 
                     }
-                    plugin.getEventManager().setWinners(winners, player, rewards);
+                    if (rewards.size() > 0) {
+                        plugin.getEventManager().setWinners(winners, player, rewards);
+                    } else {
+                        player.sendMessage(plugin.getPrefix() + ChatColor.AQUA + "Il faut spécifier les récompense de l'event");
+                    }
                 }
 
             } else if (cmd.getName().equals("manageEvent") && args.length >= 1 && !player.hasPermission("kanaeventmanager.event.admin")) {

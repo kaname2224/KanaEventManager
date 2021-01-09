@@ -15,7 +15,9 @@ public class EventManager {
 
     private KanaEventManager plugin;
     private Map<String, List<String>> rewardsMap = new HashMap<>();
-    private String rewardMsg;
+    private String singleRewardMsg;
+    private String mulpipleRewardMsg;
+    private String lastRewardLinkWord;
     private int rewardPing;
 
     public EventManager(KanaEventManager kanaEventManager) {
@@ -27,8 +29,10 @@ public class EventManager {
 
         this.rewardsMap.clear();
         ConfigurationSection rewardsSection = plugin.getConfig().getConfigurationSection("rewards");
-        this.rewardMsg = plugin.getConfig().getString("SingleWinBroadcast");
+        this.singleRewardMsg = plugin.getConfig().getString("SingleWinBroadcast");
+        this.mulpipleRewardMsg = plugin.getConfig().getString("MultipleWinBroadcast");
         this.rewardPing = plugin.getConfig().getInt("rewardsPing");
+        this.lastRewardLinkWord = plugin.getConfig().getString("RewardsLinkWord");
 
         if (rewardsSection == null) {
             return;
@@ -110,34 +114,61 @@ public class EventManager {
             return;
         }
 
-        List<String> commandsList = new ArrayList<>();
-        List<String> rewardDisplayNameList = new ArrayList<>();
+        String rewardMsg;
+        String eventName = plugin.getActualEventName();
+
+
+        Map<String, Integer> commandsList = new HashMap<>();
+        StringBuilder rewardsString = new StringBuilder();
 
         for (String rewardFull : rewards) {
             String rewardKey = rewardFull.split("-")[0];
-            int rewardamount = Integer.parseInt(rewardFull.split("-")[1]);
-            commandsList.add(this.rewardsMap.get(rewardKey).get(0));
-            rewardDisplayNameList.add(this.rewardsMap.get(rewardKey).get(1));
+            String rewardDisplayName = this.rewardsMap.get(rewardKey).get(1);
+            int rewardAmount = Integer.parseInt(rewardFull.split("-")[1]);
+            commandsList.put(this.rewardsMap.get(rewardKey).get(0), rewardAmount);
+
+            boolean isLastReward = rewards.lastIndexOf(rewardFull) == rewards.size() - 1;
+
+            if (isLastReward) {
+                rewardsString.append(this.lastRewardLinkWord).append(" ").append(rewardAmount).append(" ").append(rewardDisplayName);
+            } else {
+                rewardsString.append(rewardAmount).append(" ").append(rewardDisplayName).append(" ");
+            }
+
         }
 
-        String eventName = plugin.getActualEventName();
-
-        this.stopEvent(plugin.getEventOwner());
+        StringBuilder multipleWinnerMsg = new StringBuilder();
 
         for (OfflinePlayer winner : winners) {
+
             plugin.getDatabaseManager().incrementScore(winner);
             Bukkit.getScheduler().runTaskLaterAsynchronously(plugin, () -> {
 
-                for (String command : commandsList) {
-                    plugin.getPluginMessageManager().sendBukkitCommand("say " + command, sender);
+                for (String command : commandsList.keySet()) {
+                    command = command.replace("{amount}", String.valueOf(commandsList.get(command)));
+                    command = command.replace("{playerName}", Objects.requireNonNull(winner.getName()));
+                    plugin.getPluginMessageManager().sendBukkitCommand(command, sender);
                 }
 
             }, 20*rewardPing);
+
+            multipleWinnerMsg.append(winner.getName());
         }
 
-        this.rewardMsg = this.rewardMsg.replace("{EventName}", eventName);
+        this.stopEvent(plugin.getEventOwner());
 
-        plugin.sendWinBroadcast(sender, this.rewardMsg);
+        if (winners.size() > 1) {
+            rewardMsg = this.mulpipleRewardMsg;
+        } else {
+            rewardMsg = this.singleRewardMsg;
+        }
+
+        rewardMsg = rewardMsg.replace("{PlayerName}", Objects.requireNonNull(winners.get(0).getName()));
+        rewardMsg = rewardMsg.replace("{PlayersList}", multipleWinnerMsg);
+        rewardMsg = rewardMsg.replace("{EventName}", eventName);
+        rewardMsg = rewardMsg.replace("{rewards}", rewardsString);
+
+        plugin.sendWinBroadcast(sender, rewardMsg);
 
     }
 }

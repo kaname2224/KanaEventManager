@@ -37,6 +37,8 @@ public class AutocompleteListener implements Listener {
             args1Complete.add("forceReady");
             args1Complete.add("kick");
             args1Complete.add("winner");
+            args1Complete.add("broadcast");
+            args1Complete.add("bc");
         }
         if (event.getSender().hasPermission("kanaeventmanager.command.leave") || event.getSender().hasPermission("kanaeventmanager.event.admin")) {
             args1Complete.add("leave");
@@ -109,10 +111,37 @@ public class AutocompleteListener implements Listener {
                 if(command.startsWith(aliase + " winner")) {
                     complete.clear();
                     for (Player p : Bukkit.getOnlinePlayers()) {
+                        if (command.toLowerCase().startsWith(aliase + " winner ") && !command.contains("rewards")) {
+                            command = command.replace(aliase + " winner ", "");
+                            String pseudoCompletion = p.getName();
+                            if (command.contains(p.getName())) {
+                                command = command.replace(pseudoCompletion, "");
+                            } else if (pseudoCompletion.startsWith(command)) {
+                                complete.add(pseudoCompletion);
+                            }
+                        }
+                    }
+                }
 
-                        String cmdComplete = aliase + " setLobbyServer " + p.getName().toLowerCase();
-                        if (cmdComplete.toLowerCase().contains(command.toLowerCase())) {
-                            complete.add(p.getName());
+                if (command.startsWith(aliase + " broadcast") || command.startsWith(aliase + " bc")) {
+                    complete.clear();
+                    for (String eventName : plugin.getDatabaseManager().getEventList()) {
+                        String cmdComplete = aliase + " broadcast " + eventName.toLowerCase();
+                        String cmdComplete2 = aliase + " bc " + eventName.toLowerCase();
+
+
+                        if (cmdComplete.startsWith(command.toLowerCase()) || cmdComplete2.startsWith(command.toLowerCase())) {
+                            complete.add(eventName);
+                        }
+
+                        if (command.startsWith(cmdComplete) || command.startsWith(cmdComplete2)) {
+                            complete.clear();
+                            String cmdComplete3 = aliase + " broadcast " + eventName.toLowerCase() + " -b";
+                            String cmdComplete4 = aliase + " bc " + eventName.toLowerCase() + " -b";
+
+                            if (cmdComplete3.startsWith(command.toLowerCase()) || cmdComplete4.startsWith(command.toLowerCase())) {
+                                complete.add("-b");
+                            }
                         }
                     }
                 }

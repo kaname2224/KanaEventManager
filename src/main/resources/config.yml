@@ -33,14 +33,15 @@ SpawnPoint:
 AutoCheckScoreIntervall: 60
 
 # Broadcast for event
-Broadcast: "&9[EVENT {EventName}] &6{Broadcast} \n&epour participer faîtes &a/bmenu"
+Broadcast: "&9[{isBetaEvent}EVENT {EventName}] &6{Broadcast} \n&epour participer faîtes &a/bmenu"
 SingleWinBroadcast: "&9[EVENT {EventName}] &eBravo à {PlayerName} qui a gagné l'event et remporte {rewards}"
 MultipleWinBroadcast: "&9[EVENT {EventName}] &eBravo à {PlayersList} qui ont gagné l'event et remportent {rewards}"
 
-# Specify the link word beetween multiple rewards
-RewardsLinkWord: "et"
+# Specify the word that say event is beta-testing event
+BetaEventWord: "Bêta Testing-"
 
-# /event winner PSEUDO1 PSEUDO2 PSEUDO3 rewards cle1-1 cle2-5 cle3-3 money-650
+# Specify the link word between multiple rewards
+RewardsLinkWord: "et"
 
 # Gave reward after rewardsPing seconds
 rewardsPing: 1
@@ -50,13 +51,13 @@ rewards:
 
   cle1:
     command: cc give p Niveau1 {amount} {playerName}
-    displayName: Clé de niveau 1
+    displayName: Clé(s) de niveau 1
   cle2:
     command: cc give p Niveau2 {amount} {playerName}
-    displayName: Clé de niveau 2
+    displayName: Clé(s) de niveau 2
   cle3:
     command: cc give p Niveau3 {amount} {playerName}
-    displayName: Clé de niveau 3
+    displayName: Clé(s) de niveau 3
   money:
     command: money give {playerName} {amount}
     displayName: Hc

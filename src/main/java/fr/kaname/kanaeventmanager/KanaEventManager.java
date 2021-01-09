@@ -151,7 +151,10 @@ public class KanaEventManager extends JavaPlugin {
         player.sendMessage(this.getPrefix() + ChatColor.AQUA + "vous avez été renvoyé au spawn");
     }
 
-    public void sendBroadcast(Player player, String eventName) {
+    public void sendBroadcast(Player player, String eventName, boolean isBetaEvent) {
+
+        String betaEventWord = this.getConfig().getString("BetaEventWord");
+
         eventObject event = this.getDatabaseManager().getEvent(eventName);
         if (event == null) {
             player.sendMessage(this.getPrefix() + ChatColor.RED + "Cet event n'a pas été trouvé !");
@@ -163,6 +166,12 @@ public class KanaEventManager extends JavaPlugin {
 
         bc = bc.replace("{EventName}", event.getDisplayName());
         bc = bc.replace("{Broadcast}", text);
+
+        if (isBetaEvent && betaEventWord != null) {
+            bc = bc.replace("{isBetaEvent}", betaEventWord);
+        } else {
+            bc = bc.replace("{isBetaEvent}", "");
+        }
 
         this.getLogger().info(bc);
 
