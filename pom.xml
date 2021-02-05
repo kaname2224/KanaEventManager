@@ -6,7 +6,7 @@
 
     <groupId>fr.kaname</groupId>
     <artifactId>KanaEventManager</artifactId>
-    <version>2.3.0-Rebuild-test</version>
+    <version>2.4.0-Release</version>
 
     <repositories>
         <repository>
