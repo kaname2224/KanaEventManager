@@ -13,6 +13,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.potion.PotionEffect;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -40,7 +41,9 @@ public class JoinListener implements Listener {
         } else {
             event.getPlayer().getInventory().clear();
             event.getPlayer().setGameMode(GameMode.SURVIVAL);
-            event.getPlayer().getActivePotionEffects().clear();
+            for (PotionEffect effect : event.getPlayer().getActivePotionEffects()) {
+                event.getPlayer().removePotionEffect(effect.getType());
+            }
             plugin.sendSpawn(event.getPlayer());
         }
 

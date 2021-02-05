@@ -54,6 +54,10 @@ public class EventManager {
 
     }
 
+    public Map<String, List<String>> getRewardsMap() {
+        return rewardsMap;
+    }
+
     public void launchEvent(Player player) {
         String eventName = plugin.getActualEventName();
         String eventState = plugin.getServerOpenState();
@@ -129,7 +133,7 @@ public class EventManager {
 
             boolean isLastReward = rewards.lastIndexOf(rewardFull) == rewards.size() - 1;
 
-            if (isLastReward) {
+            if (isLastReward && rewards.size() > 1) {
                 rewardsString.append(this.lastRewardLinkWord).append(" ").append(rewardAmount).append(" ").append(rewardDisplayName);
             } else {
                 rewardsString.append(rewardAmount).append(" ").append(rewardDisplayName).append(" ");
@@ -144,15 +148,22 @@ public class EventManager {
             plugin.getDatabaseManager().incrementScore(winner);
             Bukkit.getScheduler().runTaskLaterAsynchronously(plugin, () -> {
 
+
                 for (String command : commandsList.keySet()) {
                     command = command.replace("{amount}", String.valueOf(commandsList.get(command)));
                     command = command.replace("{playerName}", Objects.requireNonNull(winner.getName()));
                     plugin.getPluginMessageManager().sendBukkitCommand(command, sender);
                 }
 
-            }, 20*rewardPing);
+            }, 20L * rewardPing);
 
-            multipleWinnerMsg.append(winner.getName());
+            boolean isLastPlayer = winners.lastIndexOf(winner) == winners.size() - 1;
+
+            if (!isLastPlayer) {
+                multipleWinnerMsg.append(winner.getName()).append(" ");
+            } else {
+                multipleWinnerMsg.append(this.lastRewardLinkWord).append(" ").append(winner.getName());
+            }
         }
 
         this.stopEvent(plugin.getEventOwner());

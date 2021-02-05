@@ -8,8 +8,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.server.TabCompleteEvent;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 public class AutocompleteListener implements Listener {
 
@@ -24,6 +23,7 @@ public class AutocompleteListener implements Listener {
         String command = event.getBuffer().replace("/", "");
         List<String> eventAliases = plugin.getCommand("manageevent").getAliases();
         List<String> complete = new ArrayList<>();
+        List<String> rewardsList = new ArrayList<>(plugin.getEventManager().getRewardsMap().keySet());
 
         List<String> args1Complete = new ArrayList<>();
         if (event.getSender().hasPermission("kanaeventmanager.event.admin")) {
@@ -110,17 +110,41 @@ public class AutocompleteListener implements Listener {
 
                 if(command.startsWith(aliase + " winner")) {
                     complete.clear();
-                    for (Player p : Bukkit.getOnlinePlayers()) {
-                        if (command.toLowerCase().startsWith(aliase + " winner ") && !command.contains("rewards")) {
-                            command = command.replace(aliase + " winner ", "");
-                            String pseudoCompletion = p.getName();
-                            if (command.contains(p.getName())) {
-                                command = command.replace(pseudoCompletion, "");
-                            } else if (pseudoCompletion.startsWith(command)) {
-                                complete.add(pseudoCompletion);
+
+                    List<String> args = Arrays.asList(command.split(" "));
+                    List<Player> playerList = new ArrayList<>(Bukkit.getOnlinePlayers());
+
+                    int currentIndex = args.size() - 1;
+                    String lastArg = args.get(currentIndex).toLowerCase();
+
+                    if (!command.contains("rewards")) {
+
+                        complete.add("rewards");
+
+                        for (Player p : playerList) {
+                            if (p.getName().toLowerCase().startsWith(lastArg)) {
+                                complete.add(p.getName());
+                            }
+                        }
+
+                        /*String argString = "[";
+                        for (String arg : args) {
+                            argString += arg + ", ";
+                        }
+                        argString += "]";
+
+                        player.sendMessage(argString);
+                        player.sendMessage("LAST => " + lastPseudo);
+                        */
+                    } else {
+                        lastArg = args.get(currentIndex).toLowerCase();
+                        for (String rewardKey : rewardsList) {
+                            if (rewardKey.toLowerCase().startsWith(lastArg)) {
+                                complete.add(rewardKey);
                             }
                         }
                     }
+
                 }
 
                 if (command.startsWith(aliase + " broadcast") || command.startsWith(aliase + " bc")) {
