@@ -2,6 +2,7 @@ package fr.kaname.kanaeventmanager.managers;
 
 import fr.kaname.kanaeventmanager.KanaEventManager;
 import fr.kaname.kanaeventmanager.object.eventObject;
+import net.milkbowl.vault.chat.Chat;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -9,6 +10,7 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 
+import javax.swing.plaf.metal.MetalBorders;
 import java.util.*;
 
 public class EventManager {
@@ -56,6 +58,19 @@ public class EventManager {
 
     public Map<String, List<String>> getRewardsMap() {
         return rewardsMap;
+    }
+
+    public void TeleportToEvent(Player player, String eventName) {
+
+        eventObject event = plugin.getDatabaseManager().getEvent(eventName);
+        if (event != null) {
+            Location eventLoc = new Location(player.getWorld(), event.getLocX(), event.getLocY(), event.getLocZ());
+            player.sendMessage(plugin.getPrefix() + ChatColor.AQUA + "Téléportation à l'event " + event.getDisplayName());
+            player.teleport(eventLoc);
+        } else {
+            player.sendMessage(plugin.getPrefix() + ChatColor.RED + "L'event n'a pas été trouvé !");
+        }
+
     }
 
     public void launchEvent(Player player) {

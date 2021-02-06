@@ -45,6 +45,14 @@ public class eventCommandManager implements CommandExecutor {
                 if (args[0].equalsIgnoreCase("stop")) {
                    plugin.getEventManager().stopEvent(player);
                 }
+                if (args[0].equalsIgnoreCase("teleport") || args[0].equalsIgnoreCase("tp")) {
+
+                    if (args.length >= 2) {
+                        String eventName = args[1];
+                        plugin.getEventManager().TeleportToEvent(player, eventName);
+                    }
+
+                }
                 if (args[0].equalsIgnoreCase("create") && args.length >= 4) {
                     String name = args[1];
 

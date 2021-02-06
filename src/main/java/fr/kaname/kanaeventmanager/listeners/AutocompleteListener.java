@@ -39,6 +39,8 @@ public class AutocompleteListener implements Listener {
             args1Complete.add("winner");
             args1Complete.add("broadcast");
             args1Complete.add("bc");
+            args1Complete.add("teleport");
+            args1Complete.add("tp");
         }
         if (event.getSender().hasPermission("kanaeventmanager.command.leave") || event.getSender().hasPermission("kanaeventmanager.event.admin")) {
             args1Complete.add("leave");
@@ -68,7 +70,25 @@ public class AutocompleteListener implements Listener {
                     }
                 }
 
-                if(command.startsWith(aliase + " start")) {
+                if (command.startsWith(aliase + " teleport") || command.startsWith(aliase + " tp")) {
+                    complete.clear();
+                    command = command.replace("tp", "teleport");
+                    command = command.toLowerCase();
+                    for (String arg : plugin.getDatabaseManager().getEventList()) {
+                        String cmdComplete = aliase + " teleport " + arg;
+                        cmdComplete = cmdComplete.toLowerCase();
+
+                        if (cmdComplete.equals(command.toLowerCase()) || command.equals(aliase + " teleport")) {
+                            return;
+                        }
+
+                        if (cmdComplete.startsWith(command)) {
+                            complete.add(arg);
+                        }
+                    }
+                }
+
+                if (command.startsWith(aliase + " start")) {
                     complete.clear();
                     for (String arg : plugin.getDatabaseManager().getEventList()) {
                         String cmdComplete = aliase + " start " + arg.toLowerCase();
