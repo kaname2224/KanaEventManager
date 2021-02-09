@@ -61,3 +61,12 @@ rewards:
   money:
     command: money give {playerName} {amount}
     displayName: Hc
+
+# Placeholder for winners
+# {playerName} => player's name
+# {playerScore} => player's score
+placeholder:
+  first-player: "&6{playerName} - {playerScore}"
+  second-player: "&4{playerName} - {playerScore}"
+  third-player: "&c{playerName} - {playerScore}"
+  default: "&3{playerName} - {playerScore}"
