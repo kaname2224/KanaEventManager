@@ -60,6 +60,10 @@ public class EventManager {
         return rewardsMap;
     }
 
+    public void deleteEvent(String eventName) {
+        plugin.getDatabaseManager().deleteEvent(eventName);
+    }
+
     public void TeleportToEvent(Player player, String eventName) {
 
         eventObject event = plugin.getDatabaseManager().getEvent(eventName);
@@ -160,7 +164,7 @@ public class EventManager {
 
         for (OfflinePlayer winner : winners) {
 
-            plugin.getDatabaseManager().incrementScore(winner);
+            plugin.getScoreManager().incrementScore(winner.getUniqueId());
             Bukkit.getScheduler().runTaskLaterAsynchronously(plugin, () -> {
 
 

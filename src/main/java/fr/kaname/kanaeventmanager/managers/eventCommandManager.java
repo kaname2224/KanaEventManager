@@ -325,6 +325,15 @@ public class eventCommandManager implements CommandExecutor {
                     }
                 }
 
+                if (args[0].equalsIgnoreCase("score") && args.length >= 2) {
+                    player.sendMessage("Score Command");
+                }
+                if (args[0].equalsIgnoreCase("delete") && args.length >= 2) {
+                    String eventName = args[1];
+                    plugin.getEventManager().deleteEvent(eventName);
+                    player.sendMessage(plugin.getPrefix() + ChatColor.AQUA + "L'event " + eventName + " à bien été supprimé");
+                }
+
             } else if (cmd.getName().equals("manageEvent") && args.length >= 1 && !player.hasPermission("kanaeventmanager.event.admin")) {
 
                 if (args[0].equalsIgnoreCase("spawn") && player.hasPermission("kanaeventmanager.command.spawn")) {

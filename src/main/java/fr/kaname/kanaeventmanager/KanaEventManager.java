@@ -36,6 +36,7 @@ public class KanaEventManager extends JavaPlugin {
     private List<UUID> playerList = new ArrayList<>();
     private Player eventOwner;
     private PluginMessageManager pluginMessageManager;
+    private ScoreManager scoreManager;
 
     @Override
     public void onEnable() {
@@ -51,6 +52,7 @@ public class KanaEventManager extends JavaPlugin {
         this.serversManagers = new ServersManagers(this);
         this.eventManager = new EventManager(this);
         this.pluginMessageManager = new PluginMessageManager(this);
+        this.scoreManager = new ScoreManager(this);
         this.getServer().getMessenger().registerOutgoingPluginChannel(this, "BungeeCord");
     }
 
@@ -109,7 +111,11 @@ public class KanaEventManager extends JavaPlugin {
     public void setSlot(int amount) { this.slot = amount; }
 
     public PluginMessageManager getPluginMessageManager() {
-        return pluginMessageManager;
+        return this.pluginMessageManager;
+    }
+
+    public ScoreManager getScoreManager() {
+        return this.scoreManager;
     }
 
     public int getSlot() {return this.slot; }

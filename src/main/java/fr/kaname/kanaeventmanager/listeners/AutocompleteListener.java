@@ -40,7 +40,9 @@ public class AutocompleteListener implements Listener {
             args1Complete.add("broadcast");
             args1Complete.add("bc");
             args1Complete.add("teleport");
+            args1Complete.add("score");
             args1Complete.add("tp");
+            args1Complete.add("delete");
         }
         if (event.getSender().hasPermission("kanaeventmanager.command.leave") || event.getSender().hasPermission("kanaeventmanager.event.admin")) {
             args1Complete.add("leave");
@@ -52,6 +54,11 @@ public class AutocompleteListener implements Listener {
         List<String> argsStartComplete = new ArrayList<>();
         argsStartComplete.add("-p");
         argsStartComplete.add("-t");
+
+        List<String> argsScoreComplete = new ArrayList<>();
+        argsScoreComplete.add("set");
+        argsScoreComplete.add("add");
+        argsScoreComplete.add("remove");
 
         if (event.getSender() instanceof Player) {
             Player player = (Player) event.getSender();
@@ -165,6 +172,26 @@ public class AutocompleteListener implements Listener {
                         }
                     }
 
+                }
+
+                if (command.startsWith(aliase + " delete")) {
+                    complete.clear();
+                    for (String eventName : plugin.getDatabaseManager().getEventList()) {
+                        String cmdComplete = aliase + " delete " + eventName.toLowerCase();
+                        if (cmdComplete.startsWith(command.toLowerCase())) {
+                            complete.add(eventName);
+                        }
+                    }
+                }
+
+                if (command.startsWith(aliase + " score")) {
+                    complete.clear();
+                    for (String argScore : argsScoreComplete) {
+                        String cmdComplete = aliase + " score " + argScore.toLowerCase();
+                        if (cmdComplete.startsWith(command.toLowerCase())) {
+                            complete.add(argScore);
+                        }
+                    }
                 }
 
                 if (command.startsWith(aliase + " broadcast") || command.startsWith(aliase + " bc")) {

@@ -171,6 +171,14 @@ public class DatabaseManager {
         }
     }
 
+    public void deleteEvent(String Name) {
+        try {
+            this.getStatement().execute("DELETE FROM `" + this.getEventTable() + "` WHERE `Name` = '" + Name + "'");
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
     public void createPlayerScore(Player player) {
         try {
             this.getStatement().execute("INSERT INTO `" + this.getScoreTable() + "` (`playerUUID`) VALUES ('" +
@@ -180,10 +188,20 @@ public class DatabaseManager {
         }
     }
 
-    public void incrementScore(OfflinePlayer player) {
+    public void incrementScore(UUID playerUuid) {
         try {
             this.getStatement().execute("UPDATE `" + this.getScoreTable() + "` SET `score`=score+1 WHERE `playerUUID`='"
-                    + player.getUniqueId().toString() + "'");
+                    + playerUuid.toString() + "'");
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void setScore(UUID playerUuid, int score) {
+        try {
+            this.getStatement().execute("UPDATE `" + this.getScoreTable() + "` SET `score`= '" + score + "' WHERE `playerUUID`='"
+                    + playerUuid.toString() + "'");
 
         } catch (SQLException e) {
             e.printStackTrace();
