@@ -326,7 +326,7 @@ public class eventCommandManager implements CommandExecutor {
                 }
 
                 if (args[0].equalsIgnoreCase("score") && args.length >= 2) {
-                    player.sendMessage("Score Command");
+                    plugin.getScoreManager().scoreCommand(player, cmd, args);
                 }
                 if (args[0].equalsIgnoreCase("delete") && args.length >= 2) {
                     String eventName = args[1];

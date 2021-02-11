@@ -3,6 +3,7 @@ package fr.kaname.kanaeventmanager.listeners;
 import fr.kaname.kanabungeetp.objects.Servers;
 import fr.kaname.kanaeventmanager.KanaEventManager;
 import org.bukkit.Bukkit;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -186,11 +187,22 @@ public class AutocompleteListener implements Listener {
 
                 if (command.startsWith(aliase + " score")) {
                     complete.clear();
-                    for (String argScore : argsScoreComplete) {
-                        String cmdComplete = aliase + " score " + argScore.toLowerCase();
+                    for (OfflinePlayer offlinePlayer : Bukkit.getOfflinePlayers()) {
+                        String cmdComplete = aliase + " score " + offlinePlayer.getName().toLowerCase();
                         if (cmdComplete.startsWith(command.toLowerCase())) {
-                            complete.add(argScore);
+                            complete.add(offlinePlayer.getName());
                         }
+
+                        if (command.toLowerCase().startsWith(cmdComplete)) {
+                            complete.clear();
+                            for (String argScore : argsScoreComplete) {
+                                String cmdComplete2 = cmdComplete + " " + argScore.toLowerCase();
+                                if (cmdComplete2.startsWith(command.toLowerCase())) {
+                                    complete.add(argScore);
+                                }
+                            }
+                        }
+
                     }
                 }
 
