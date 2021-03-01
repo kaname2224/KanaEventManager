@@ -45,6 +45,14 @@ public class eventCommandManager implements CommandExecutor {
                 if (args[0].equalsIgnoreCase("stop")) {
                    plugin.getEventManager().stopEvent(player);
                 }
+                if (args[0].equalsIgnoreCase("teleport") || args[0].equalsIgnoreCase("tp")) {
+
+                    if (args.length >= 2) {
+                        String eventName = args[1];
+                        plugin.getEventManager().TeleportToEvent(player, eventName);
+                    }
+
+                }
                 if (args[0].equalsIgnoreCase("create") && args.length >= 4) {
                     String name = args[1];
 
@@ -137,13 +145,19 @@ public class eventCommandManager implements CommandExecutor {
                         return false;
                     }
 
-                    String arg = null;
-                    int amount = -1;
+                    String arg;
+                    int amount;
+                    boolean isBetaEvent = false;
                     String eventName = args[1];
                     plugin.setEventOwner(player);
 
                     if (args.length >= 4) {
                         arg = args[2];
+                        if (args.length >= 5) {
+                            if (args[4].equalsIgnoreCase("-b")) {
+                                isBetaEvent = true;
+                            }
+                        }
                         try {
                             amount = Integer.parseInt(args[3], 10);
                         } catch (NumberFormatException exept) {
@@ -169,10 +183,10 @@ public class eventCommandManager implements CommandExecutor {
                                 plugin.getServersManagers().SlotOpenedServer(amount, player, eventName);
                             }
 
-                            plugin.sendBroadcast(player, eventName);
+                            plugin.sendBroadcast(player, eventName, isBetaEvent);
 
                         } else {
-                            player.sendMessage(plugin.getPrefix() + ChatColor.RED + "Vous ne pouvez pas définir un nombre null");
+                            player.sendMessage(plugin.getPrefix() + ChatColor.RED + "Vous ne pouvez pas définir un nombre nul");
                             return false;
                         }
                     }
@@ -274,39 +288,50 @@ public class eventCommandManager implements CommandExecutor {
                 }
 
                 if (args[0].equalsIgnoreCase("broadcast") && args.length >= 2 || args[0].equalsIgnoreCase("bc") && args.length >= 2) {
-                    plugin.sendBroadcast(player, args[1]);
+                    boolean isBetaEvent = false;
+                    if (args.length >= 3) {
+                        if (args[2].equalsIgnoreCase("-b")) {
+                            isBetaEvent = true;
+                        }
+                    }
+                    plugin.sendBroadcast(player, args[1], isBetaEvent);
                 }
 
                 if (args[0].equalsIgnoreCase("winner") && args.length >= 2) {
-                    List<String> winnersPseudo = new ArrayList<>(Arrays.asList(args));
-                    List<String> offlineWinnersPseudo = new ArrayList<>();
                     List<OfflinePlayer> winners = new ArrayList<>();
-                    if (winnersPseudo.size() >= 1) {
-                        for (String pseudo : winnersPseudo) {
-                            Player winner = Bukkit.getPlayerExact(pseudo);
-                            if (winner != null) {
-                                Bukkit.broadcastMessage("PLAYER : " + winner.getUniqueId().toString());
-                                winners.add(winner);
-                            } else {
-                                offlineWinnersPseudo.add(pseudo);
-                            }
-                        }
+                    List<String> rewards = new ArrayList<>();
+                    List<String> arguments = new ArrayList<>(Arrays.asList(args));
+                    arguments.remove(0);
+                    boolean isRewards = false;
 
-                        String lastPseudo = offlineWinnersPseudo.get(offlineWinnersPseudo.size() - 1);
-                        for (OfflinePlayer offlinePlayer : Bukkit.getOfflinePlayers()) {
-                            for (String pseudo : offlineWinnersPseudo) {
-                                if (offlinePlayer.getName().equals(pseudo)) {
-                                    winners.add(offlinePlayer);
-                                    if (pseudo.equalsIgnoreCase(lastPseudo)) {
-                                        break;
-                                    }
-                                }
-                            }
-                        }
+                    for (String arg : arguments) {
 
-                        plugin.getEventManager().setWinners(winners, player);
+                        if (!arg.equalsIgnoreCase("rewards") && !isRewards) {
+
+                            OfflinePlayer op = Bukkit.getPlayerExact(arg);
+                            winners.add(op);
+
+                        } else if (arg.equalsIgnoreCase("rewards") &&  !isRewards){
+                            isRewards = true;
+                        } else {
+                            rewards.add(arg);
+                        }
 
                     }
+                    if (rewards.size() > 0) {
+                        plugin.getEventManager().setWinners(winners, player, rewards);
+                    } else {
+                        player.sendMessage(plugin.getPrefix() + ChatColor.AQUA + "Il faut spécifier les récompense de l'event");
+                    }
+                }
+
+                if (args[0].equalsIgnoreCase("score") && args.length >= 2) {
+                    plugin.getScoreManager().scoreCommand(player, cmd, args);
+                }
+                if (args[0].equalsIgnoreCase("delete") && args.length >= 2) {
+                    String eventName = args[1];
+                    plugin.getEventManager().deleteEvent(eventName);
+                    player.sendMessage(plugin.getPrefix() + ChatColor.AQUA + "L'event " + eventName + " à bien été supprimé");
                 }
 
             } else if (cmd.getName().equals("manageEvent") && args.length >= 1 && !player.hasPermission("kanaeventmanager.event.admin")) {

@@ -1,6 +1,6 @@
 name: KanaEventManager
 author: Kaname
-version: 2.3.0
+version: Release 2.5.0
 main: fr.kaname.kanaeventmanager.KanaEventManager
 api-version: "1.16"
 depend:

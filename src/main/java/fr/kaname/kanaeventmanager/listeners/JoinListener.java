@@ -13,6 +13,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.potion.PotionEffect;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -40,6 +41,9 @@ public class JoinListener implements Listener {
         } else {
             event.getPlayer().getInventory().clear();
             event.getPlayer().setGameMode(GameMode.SURVIVAL);
+            for (PotionEffect effect : event.getPlayer().getActivePotionEffects()) {
+                event.getPlayer().removePotionEffect(effect.getType());
+            }
             plugin.sendSpawn(event.getPlayer());
         }
 
@@ -48,10 +52,12 @@ public class JoinListener implements Listener {
 
             if (plugin.getServerOpenState().equalsIgnoreCase("slot")) {
                 this.updateParticipant();
-                event.setJoinMessage(plugin.getPrefix() + ChatColor.AQUA + event.getPlayer().getDisplayName() + " a rejoins l'event " + plugin.getActualEventName() + " (" + plugin.getEventPlayerCount() + "/" + plugin.getSlot() + ")");
+                event.setJoinMessage(plugin.getPrefix() + ChatColor.AQUA + event.getPlayer().getDisplayName() + " a rejoint l'event " + plugin.getActualEventName() + " (" + plugin.getEventPlayerCount() + "/" + plugin.getSlot() + ")");
             } else if (plugin.getServerOpenState().equalsIgnoreCase("time")) {
-                event.setJoinMessage(plugin.getPrefix() + ChatColor.AQUA + event.getPlayer().getDisplayName() + " a rejoins l'event " + plugin.getActualEventName());
+                event.setJoinMessage(plugin.getPrefix() + ChatColor.AQUA + event.getPlayer().getDisplayName() + " a rejoint l'event " + plugin.getActualEventName());
                 this.updateParticipant();
+            } else {
+                event.setJoinMessage(plugin.getPrefix() + ChatColor.AQUA + event.getPlayer().getDisplayName() + " a rejoint l'event " + plugin.getActualEventName());
             }
 
         } else {
@@ -116,7 +122,7 @@ public class JoinListener implements Listener {
             plugin.getKbtpPlugin().closeServer(eventServerName);
             plugin.setServerEventOpen(false);
             plugin.setServerOpenState("ready");
-            plugin.getEventOwner().sendMessage(plugin.getPrefix() + ChatColor.AQUA + "Le nombre de joueur requis a été atteind\n" +
+            plugin.getEventOwner().sendMessage(plugin.getPrefix() + ChatColor.AQUA + "Le nombre de joueur requis a été atteinds\n" +
                     "tapez §6/event launch pour commencer");
         }
     }

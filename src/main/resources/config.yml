@@ -33,4 +33,40 @@ SpawnPoint:
 AutoCheckScoreIntervall: 60
 
 # Broadcast for event
-Broadcast: "&9[EVENT {EventName}] &6{Broadcast} \n&epour participer faîtes &a/bmenu"
+Broadcast: "&9[{isBetaEvent}EVENT {EventName}] &6{Broadcast} \n&epour participer faîtes &a/bmenu"
+SingleWinBroadcast: "&9[EVENT {EventName}] &eBravo à {PlayerName} qui a gagné l'event et remporte {rewards}"
+MultipleWinBroadcast: "&9[EVENT {EventName}] &eBravo à {PlayersList} qui ont gagné l'event et remportent {rewards}"
+
+# Specify the word that say event is beta-testing event
+BetaEventWord: "Bêta Testing-"
+
+# Specify the link word between multiple rewards
+RewardsLinkWord: "et"
+
+# Gave reward after rewardsPing seconds
+rewardsPing: 1
+
+# rewards objects
+rewards:
+
+  cle1:
+    command: cc give p Niveau1 {amount} {playerName}
+    displayName: Clé(s) de niveau 1
+  cle2:
+    command: cc give p Niveau2 {amount} {playerName}
+    displayName: Clé(s) de niveau 2
+  cle3:
+    command: cc give p Niveau3 {amount} {playerName}
+    displayName: Clé(s) de niveau 3
+  money:
+    command: money give {playerName} {amount}
+    displayName: Hc
+
+# Placeholder for winners
+# {playerName} => player's name
+# {playerScore} => player's score
+placeholder:
+  first-player: "&6{playerName} - {playerScore}"
+  second-player: "&4{playerName} - {playerScore}"
+  third-player: "&c{playerName} - {playerScore}"
+  default: "&3{playerName} - {playerScore}"

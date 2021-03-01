@@ -93,6 +93,7 @@ public class DatabaseManager {
 
         this.getStatement().execute("CREATE TABLE IF NOT EXISTS `" + this.getScoreTable() + "` (" +
                 "`playerUUID` VARCHAR(45) NOT NULL," +
+                "`playerName` VARCHAR(45) NOT NULL," +
                 "`score` INT(11) NOT NULL DEFAULT 0," +
                 "PRIMARY KEY (`playerUUID`))");
     }
@@ -162,6 +163,24 @@ public class DatabaseManager {
         return event;
     }
 
+    public UUID getPlayerUuid(String playerName) {
+
+        UUID playerUUID = null;
+        try {
+            ResultSet datas = this.getStatement().executeQuery("SELECT * FROM `" + this.getScoreTable() + "` WHERE `playerName` = '" +
+                    playerName + "'");
+
+            if (datas.next()) {
+                playerUUID = UUID.fromString(datas.getString("playerUUID"));
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return playerUUID;
+    }
+
     public void createEvent(String Name, String displayName, String Broadcast, Double LocX, Double LocY, Double LocZ) {
         try {
             this.getStatement().execute("INSERT INTO `" + this.getEventTable() + "` (`Name`, `DisplayName`, `Broadcast`, `LocX`, `LocY`, `LocZ`)" +
@@ -171,23 +190,72 @@ public class DatabaseManager {
         }
     }
 
+    public void deleteEvent(String Name) {
+        try {
+            this.getStatement().execute("DELETE FROM `" + this.getEventTable() + "` WHERE `Name` = '" + Name + "'");
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
     public void createPlayerScore(Player player) {
         try {
-            this.getStatement().execute("INSERT INTO `" + this.getScoreTable() + "` (`playerUUID`) VALUES ('" +
-                    player.getUniqueId().toString() + "')");
+            this.getStatement().execute("INSERT INTO `" + this.getScoreTable() + "` (`playerUUID`, `playerName`) VALUES ('" +
+                    player.getUniqueId().toString() + "', '" + player.getName() + "')");
         } catch (SQLException e) {
             e.printStackTrace();
         }
     }
 
-    public void incrementScore(OfflinePlayer player) {
+    public void addToScore(UUID playerUuid, int amount) {
         try {
-            this.getStatement().execute("UPDATE `" + this.getScoreTable() + "` SET `score`=score+1 WHERE `playerUUID`='"
-                    + player.getUniqueId().toString() + "'");
+            this.getStatement().execute("UPDATE `" + this.getScoreTable() + "` SET `score`=score+" + amount + " WHERE `playerUUID`='"
+                    + playerUuid.toString() + "'");
 
         } catch (SQLException e) {
             e.printStackTrace();
         }
     }
 
+    public void incrementScore(UUID playerUuid) {
+        addToScore(playerUuid, 1);
+    }
+
+    public void setScore(UUID playerUuid, int score) {
+        try {
+            this.getStatement().execute("UPDATE `" + this.getScoreTable() + "` SET `score`= '" + score + "' WHERE `playerUUID`='"
+                    + playerUuid.toString() + "'");
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public int getScore(UUID playerUuid) {
+
+        int score = 0;
+        try {
+            ResultSet datas = this.getStatement().executeQuery("SELECT * FROM `" + this.getScoreTable() + "` WHERE `playerUUID` = '" +
+                    playerUuid.toString() + "'");
+
+            if (datas.next()) {
+                score = datas.getInt("score");
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return score;
+    }
+
+    public void removeToScore(UUID playerUuid, int amount) {
+        try {
+            this.getStatement().execute("UPDATE `" + this.getScoreTable() + "` SET `score`=score-" + amount + " WHERE `playerUUID`='"
+                    + playerUuid.toString() + "'");
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
 }
