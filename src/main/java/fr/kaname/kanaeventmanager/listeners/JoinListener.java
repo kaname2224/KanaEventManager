@@ -52,10 +52,12 @@ public class JoinListener implements Listener {
 
             if (plugin.getServerOpenState().equalsIgnoreCase("slot")) {
                 this.updateParticipant();
-                event.setJoinMessage(plugin.getPrefix() + ChatColor.AQUA + event.getPlayer().getDisplayName() + " a rejoins l'event " + plugin.getActualEventName() + " (" + plugin.getEventPlayerCount() + "/" + plugin.getSlot() + ")");
+                event.setJoinMessage(plugin.getPrefix() + ChatColor.AQUA + event.getPlayer().getDisplayName() + " a rejoint l'event " + plugin.getActualEventName() + " (" + plugin.getEventPlayerCount() + "/" + plugin.getSlot() + ")");
             } else if (plugin.getServerOpenState().equalsIgnoreCase("time")) {
-                event.setJoinMessage(plugin.getPrefix() + ChatColor.AQUA + event.getPlayer().getDisplayName() + " a rejoins l'event " + plugin.getActualEventName());
+                event.setJoinMessage(plugin.getPrefix() + ChatColor.AQUA + event.getPlayer().getDisplayName() + " a rejoint l'event " + plugin.getActualEventName());
                 this.updateParticipant();
+            } else {
+                event.setJoinMessage(plugin.getPrefix() + ChatColor.AQUA + event.getPlayer().getDisplayName() + " a rejoint l'event " + plugin.getActualEventName());
             }
 
         } else {

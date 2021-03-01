@@ -207,14 +207,18 @@ public class DatabaseManager {
         }
     }
 
-    public void incrementScore(UUID playerUuid) {
+    public void addToScore(UUID playerUuid, int amount) {
         try {
-            this.getStatement().execute("UPDATE `" + this.getScoreTable() + "` SET `score`=score+1 WHERE `playerUUID`='"
+            this.getStatement().execute("UPDATE `" + this.getScoreTable() + "` SET `score`=score+" + amount + " WHERE `playerUUID`='"
                     + playerUuid.toString() + "'");
 
         } catch (SQLException e) {
             e.printStackTrace();
         }
+    }
+
+    public void incrementScore(UUID playerUuid) {
+        addToScore(playerUuid, 1);
     }
 
     public void setScore(UUID playerUuid, int score) {
@@ -243,5 +247,15 @@ public class DatabaseManager {
         }
 
         return score;
+    }
+
+    public void removeToScore(UUID playerUuid, int amount) {
+        try {
+            this.getStatement().execute("UPDATE `" + this.getScoreTable() + "` SET `score`=score-" + amount + " WHERE `playerUUID`='"
+                    + playerUuid.toString() + "'");
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 }

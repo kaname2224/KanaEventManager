@@ -6,7 +6,7 @@
 
     <groupId>fr.kaname</groupId>
     <artifactId>KanaEventManager</artifactId>
-    <version>2.5.0-Snapshot</version>
+    <version>2.5.0-Release</version>
 
     <repositories>
         <repository>
@@ -38,7 +38,7 @@
         <dependency>
             <groupId>fr.kaname</groupId>
             <artifactId>KanaBungeeTP</artifactId>
-            <version>2.2.2</version>
+            <version>2.3.0</version>
         </dependency>
         <dependency>
             <groupId>me.clip</groupId>
@@ -65,6 +65,12 @@
             <id>Serveur DEV</id>
             <build>
                 <directory>C:\Users\Maxime\Documents\Programmation\javaPluginMc\Serveurs_Mc\1.15.2\Lobby 1.15.2\plugins</directory>
+            </build>
+        </profile>
+        <profile>
+            <id>Serveur DEV Portable</id>
+            <build>
+                <directory>C:\Users\Maxime Gregorio\Desktop\KanaEventManager\Serveur 1.16.5\plugins</directory>
             </build>
         </profile>
     </profiles>
