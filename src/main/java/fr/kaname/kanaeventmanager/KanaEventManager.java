@@ -37,6 +37,7 @@ public class KanaEventManager extends JavaPlugin {
     private Player eventOwner;
     private PluginMessageManager pluginMessageManager;
     private ScoreManager scoreManager;
+    private boolean isBetaEvent = false;
 
     @Override
     public void onEnable() {
@@ -136,6 +137,10 @@ public class KanaEventManager extends JavaPlugin {
         this.eventOwner = eventOwner;
     }
 
+    public boolean isBetaEvent() {
+        return isBetaEvent;
+    }
+
     public void sendSpawn(Player player) {
 
         FileConfiguration config = this.getConfig();
@@ -203,5 +208,9 @@ public class KanaEventManager extends JavaPlugin {
         out.writeUTF(text);
 
         player.sendPluginMessage(this, "BungeeCord", out.toByteArray());
+    }
+
+    public void setBetaEvent(boolean isBetaEvent) {
+        this.isBetaEvent = isBetaEvent;
     }
 }

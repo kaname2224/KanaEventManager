@@ -109,7 +109,7 @@ public class EventManager {
         }
     }
 
-    public void stopEvent(Player player) {
+    public void stopEvent(Player player, boolean isWinnerCommand) {
 
         plugin.setEvent(false);
         plugin.setActualEventName(null);
@@ -140,6 +140,7 @@ public class EventManager {
         String rewardMsg;
         String eventName = plugin.getActualEventName();
 
+        plugin.getDatabaseManager().logEvent(true, eventName, plugin.getEventOwner(), winners, rewards, plugin.isBetaEvent());
 
         Map<String, Integer> commandsList = new HashMap<>();
         StringBuilder rewardsString = new StringBuilder();
@@ -185,7 +186,7 @@ public class EventManager {
             }
         }
 
-        this.stopEvent(plugin.getEventOwner());
+        this.stopEvent(plugin.getEventOwner(), true);
 
         if (winners.size() > 1) {
             rewardMsg = this.mulpipleRewardMsg;

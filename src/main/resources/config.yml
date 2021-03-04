@@ -14,6 +14,7 @@ database:
   tables:
     event: "KEM_event"
     score: "KEM_score"
+    logs: "KEM_logs"
 
 # Server configuration for BungeeCord (specifies the bungee's config.yml server's name)
 

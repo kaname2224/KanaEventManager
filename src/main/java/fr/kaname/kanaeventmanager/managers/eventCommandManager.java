@@ -43,7 +43,7 @@ public class eventCommandManager implements CommandExecutor {
                     plugin.getEventManager().launchEvent(player);
                 }
                 if (args[0].equalsIgnoreCase("stop")) {
-                   plugin.getEventManager().stopEvent(player);
+                   plugin.getEventManager().stopEvent(player, false);
                 }
                 if (args[0].equalsIgnoreCase("teleport") || args[0].equalsIgnoreCase("tp")) {
 
@@ -158,6 +158,7 @@ public class eventCommandManager implements CommandExecutor {
                                 isBetaEvent = true;
                             }
                         }
+                        plugin.setBetaEvent(isBetaEvent);
                         try {
                             amount = Integer.parseInt(args[3], 10);
                         } catch (NumberFormatException exept) {

@@ -3,6 +3,7 @@ package fr.kaname.kanaeventmanager.managers;
 import fr.kaname.kanaeventmanager.KanaEventManager;
 import fr.kaname.kanaeventmanager.object.eventObject;
 import fr.kaname.kanaeventmanager.object.playerRank;
+import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.configuration.Configuration;
 import org.bukkit.entity.Player;
@@ -20,6 +21,7 @@ public class DatabaseManager {
     private Statement checker;
     private String eventTable;
     private String scoreTable;
+    private String logsTable;
     private String LastVersion;
 
     public DatabaseManager(KanaEventManager plugin) {
@@ -32,6 +34,10 @@ public class DatabaseManager {
 
     public String getScoreTable() {
         return scoreTable;
+    }
+
+    public String getLogsTable() {
+        return logsTable;
     }
 
     private Statement getStatement() {
@@ -49,6 +55,7 @@ public class DatabaseManager {
 
         eventTable = config.getString("database.tables.event");
         scoreTable = config.getString("database.tables.score");
+        logsTable = config.getString("database.tables.logs");
 
         try {
             this.statement = DriverManager.getConnection("jdbc:mysql://" + host + ":" + port + "/" + db, user, pass).createStatement();
@@ -96,6 +103,41 @@ public class DatabaseManager {
                 "`playerName` VARCHAR(45) NOT NULL," +
                 "`score` INT(11) NOT NULL DEFAULT 0," +
                 "PRIMARY KEY (`playerUUID`))");
+
+        this.getStatement().execute("CREATE TABLE IF NOT EXISTS `" + this.getLogsTable() + "` (" +
+                "`logID` INT(11) NOT NULL AUTO_INCREMENT," +
+                "`PlayerName` VARCHAR(45) NOT NULL," +
+                "`eventName` VARCHAR(45) NOT NULL," +
+                "`time` TIMESTAMP NOT NULL," +
+                "`winners` TEXT NOT NULL," +
+                "`rewards` TEXT NOT NULL," +
+                "`isBeta` BOOLEAN DEFAULT 0," +
+                "`isRewardsSendSuccess` BOOLEAN DEFAULT 0," +
+                "PRIMARY KEY (`logID`))");
+    }
+
+    public void logEvent(boolean isWinnerCommand, String eventName, Player eventOwner, List<OfflinePlayer> winners, List<String> rewards, boolean isBetaEvent) {
+
+        int BetaEventValue = isBetaEvent ? 1 : 0;
+
+        StringBuilder winnersFormatString = new StringBuilder();
+
+        for (OfflinePlayer winner : winners) {
+            winnersFormatString.append(winner.getName()).append("/");
+        }
+
+        Bukkit.broadcastMessage("DEBUG : " + winnersFormatString);
+
+        if (isWinnerCommand) {
+            try {
+                this.getStatement().execute("INSERT INTO " + this.getLogsTable() + "(`PlayerName`,`eventName`,`time`,`winners`,`rewards`,`isBeta`)" +
+                        "VALUES('" + eventOwner.getName() + "','" + eventName + "',CURRENT_TIMESTAMP, '" + winnersFormatString + "','rewardsListStringFormat','" + BetaEventValue + "')"
+                );
+
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     public List<String> getEventList() {
