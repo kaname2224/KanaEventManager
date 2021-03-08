@@ -8,6 +8,7 @@ import fr.kaname.kanaeventmanager.listeners.JoinListener;
 import fr.kaname.kanaeventmanager.managers.*;
 import fr.kaname.kanaeventmanager.object.PapiExpansion;
 import fr.kaname.kanaeventmanager.object.eventObject;
+import me.clip.placeholderapi.expansion.PlaceholderExpansion;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -38,11 +39,13 @@ public class KanaEventManager extends JavaPlugin {
     private PluginMessageManager pluginMessageManager;
     private ScoreManager scoreManager;
     private boolean isBetaEvent = false;
+    private PapiExpansion placeholderExpansion;
 
     @Override
     public void onEnable() {
         saveDefaultConfig();
-        new PapiExpansion(this).register();
+        this.placeholderExpansion = new PapiExpansion(this);
+        this.placeholderExpansion.register();
         this.getLogger().info("Plugin Enabled !");
         this.db = new DatabaseManager(this);
         this.db.ConnectDatabase();
@@ -55,6 +58,10 @@ public class KanaEventManager extends JavaPlugin {
         this.pluginMessageManager = new PluginMessageManager(this);
         this.scoreManager = new ScoreManager(this);
         this.getServer().getMessenger().registerOutgoingPluginChannel(this, "BungeeCord");
+    }
+
+    public PapiExpansion getPlaceholderExpansion() {
+        return placeholderExpansion;
     }
 
     public KanaBungeeTP getKbtpPlugin() {

@@ -71,6 +71,18 @@ public class DatabaseManager {
         }
     }
 
+    public boolean checkConnection() {
+        boolean success = false;
+        try {
+            ResultSet resultSet = this.getStatement().executeQuery("SELECT * FROM " + this.eventTable);
+            success = true;
+        } catch (SQLException | NullPointerException e) {
+            e.printStackTrace();
+        }
+
+        return success;
+    }
+
     public String GetPluginLatestVersion() {
         try {
             ResultSet Version = this.checker.executeQuery("SELECT * FROM plugins WHERE `nom` = '" + plugin.getName() + "'");
@@ -112,6 +124,7 @@ public class DatabaseManager {
                 "`winners` TEXT NOT NULL," +
                 "`rewards` TEXT NOT NULL," +
                 "`isBeta` BOOLEAN DEFAULT 0," +
+                "`CommandsRewardsSend` TEXT NULL," +
                 "`isRewardsSendSuccess` BOOLEAN DEFAULT 0," +
                 "PRIMARY KEY (`logID`))");
     }
@@ -121,23 +134,40 @@ public class DatabaseManager {
         int BetaEventValue = isBetaEvent ? 1 : 0;
 
         StringBuilder winnersFormatString = new StringBuilder();
+        StringBuilder rewardsFormatString = new StringBuilder();
 
         for (OfflinePlayer winner : winners) {
             winnersFormatString.append(winner.getName()).append("/");
         }
 
-        Bukkit.broadcastMessage("DEBUG : " + winnersFormatString);
+        for (String reward : rewards) {
+            rewardsFormatString.append(reward).append("/");
+        }
 
         if (isWinnerCommand) {
             try {
                 this.getStatement().execute("INSERT INTO " + this.getLogsTable() + "(`PlayerName`,`eventName`,`time`,`winners`,`rewards`,`isBeta`)" +
-                        "VALUES('" + eventOwner.getName() + "','" + eventName + "',CURRENT_TIMESTAMP, '" + winnersFormatString + "','rewardsListStringFormat','" + BetaEventValue + "')"
+                        "VALUES('" + eventOwner.getName() + "','" + eventName + "',CURRENT_TIMESTAMP, '" + winnersFormatString +
+                        "','" + rewardsFormatString + "','" + BetaEventValue + "')"
                 );
 
             } catch (SQLException e) {
                 e.printStackTrace();
             }
         }
+    }
+
+    public void getLastEvent() {
+
+        ResultSet result = null;
+
+        try {
+            result = this.getStatement().executeQuery("SELECT * FROM");
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
     }
 
     public List<String> getEventList() {

@@ -49,7 +49,6 @@ rewardsPing: 1
 
 # rewards objects
 rewards:
-
   cle1:
     command: cc give p Niveau1 {amount} {playerName}
     displayName: Clé(s) de niveau 1
@@ -71,3 +70,10 @@ placeholder:
   second-player: "&4{playerName} - {playerScore}"
   third-player: "&c{playerName} - {playerScore}"
   default: "&3{playerName} - {playerScore}"
+
+# Debug mode in chat (dev mode)
+debug:
+  showPluginMessage: true
+  showReloadMessage: true
+  showDatabaseMessage: true
+  showLoggingMessage: true

@@ -2,7 +2,6 @@ package fr.kaname.kanaeventmanager.managers;
 
 import fr.kaname.kanaeventmanager.KanaEventManager;
 import fr.kaname.kanaeventmanager.object.eventObject;
-import net.milkbowl.vault.chat.Chat;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -10,7 +9,6 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 
-import javax.swing.plaf.metal.MetalBorders;
 import java.util.*;
 
 public class EventManager {
@@ -24,6 +22,10 @@ public class EventManager {
 
     public EventManager(KanaEventManager kanaEventManager) {
         this.plugin = kanaEventManager;
+        this.getConfigRewards();
+    }
+
+    public void reloadEvent() {
         this.getConfigRewards();
     }
 
@@ -162,6 +164,7 @@ public class EventManager {
         }
 
         StringBuilder multipleWinnerMsg = new StringBuilder();
+        List<String> sendedCommandList = new ArrayList<>();
 
         for (OfflinePlayer winner : winners) {
 
@@ -170,8 +173,11 @@ public class EventManager {
 
 
                 for (String command : commandsList.keySet()) {
+
                     command = command.replace("{amount}", String.valueOf(commandsList.get(command)));
                     command = command.replace("{playerName}", Objects.requireNonNull(winner.getName()));
+                    sender.sendMessage(plugin.getPrefix() + "[DEBUG]" + ChatColor.AQUA + " Envoi de la commande : " + command);
+                    sendedCommandList.add(command);
                     plugin.getPluginMessageManager().sendBukkitCommand(command, sender);
                 }
 
@@ -185,6 +191,14 @@ public class EventManager {
                 multipleWinnerMsg.append(this.lastRewardLinkWord).append(" ").append(winner.getName());
             }
         }
+
+        Bukkit.getScheduler().runTaskLaterAsynchronously(plugin, () -> {
+
+            for (String cmd : sendedCommandList) {
+                Bukkit.broadcastMessage(cmd);
+            }
+
+        }, 20L * rewardPing + 1);
 
         this.stopEvent(plugin.getEventOwner(), true);
 

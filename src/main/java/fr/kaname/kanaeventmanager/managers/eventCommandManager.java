@@ -2,6 +2,7 @@ package fr.kaname.kanaeventmanager.managers;
 
 import fr.kaname.kanabungeetp.KanaBungeeTP;
 import fr.kaname.kanaeventmanager.KanaEventManager;
+import fr.kaname.kanaeventmanager.object.PapiExpansion;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -31,8 +32,25 @@ public class eventCommandManager implements CommandExecutor {
 
         if (cmd.getName().equalsIgnoreCase("manageevent") && args.length >= 1) {
             if (args[0].equalsIgnoreCase("reload")) {
+
+                sender.sendMessage(plugin.getPrefix() + ChatColor.AQUA + "Reloading plugin...");
+                sender.sendMessage(plugin.getPrefix() + ChatColor.AQUA + "Reloading config file...");
                 plugin.reloadConfig();
-                sender.sendMessage(plugin.getPrefix() + ChatColor.AQUA + "Config Reloaded");
+                sender.sendMessage(plugin.getPrefix() + ChatColor.GREEN + "Success");
+
+                sender.sendMessage(plugin.getPrefix() + ChatColor.AQUA + "Reconnect to database...");
+                plugin.getDatabaseManager().ConnectDatabase();
+                sender.sendMessage(plugin.getPrefix() + ChatColor.GREEN + "Success");
+
+                sender.sendMessage(plugin.getPrefix() + ChatColor.AQUA + "Reloading placeholderAPI config...");
+                plugin.getPlaceholderExpansion().reloadConfig();
+                sender.sendMessage(plugin.getPrefix() + ChatColor.GREEN + "Success");
+
+                sender.sendMessage(plugin.getPrefix() + ChatColor.AQUA + "Reloading rewards config...");
+                plugin.getEventManager().reloadEvent();
+                sender.sendMessage(plugin.getPrefix() + ChatColor.GREEN + "Success");
+
+                sender.sendMessage(plugin.getPrefix() + ChatColor.GREEN + "Plugin reloaded !");
             }
         }
 
@@ -117,6 +135,33 @@ public class eventCommandManager implements CommandExecutor {
                     } else {
                         player.sendMessage(plugin.getPrefix() + ChatColor.AQUA + "This event name is already in use !");
                     }
+
+                }
+
+                if (args[0].equalsIgnoreCase("PluginStatus")) {
+
+                    player.sendMessage(plugin.getPrefix() + ChatColor.BLUE + "Détail du fichier de configuration");
+
+                    if (plugin.getDatabaseManager().checkConnection()) {
+                        player.sendMessage(ChatColor.BLUE + "Base de données : " + ChatColor.GREEN + "Fonctionne");
+                    } else {
+                        player.sendMessage(ChatColor.BLUE + "Base de données : " + ChatColor.RED + "Erreur");
+                    }
+
+                    player.sendMessage(ChatColor.BLUE + "Ping avant envois des récompenses : " + ChatColor.AQUA + plugin.getConfig().getString("rewardsPing") + " secondes");
+
+                    player.sendMessage(ChatColor.BLUE + "Serveur event (BungeeCord) : " + ChatColor.AQUA + plugin.getConfig().getString("BungeeCord.eventServerName"));
+                    player.sendMessage(ChatColor.BLUE + "Serveur \"lobby\" (BungeeCord) : " + ChatColor.AQUA + plugin.getConfig().getString("BungeeCord.lobbyServerName"));
+
+                    player.sendMessage(ChatColor.BLUE + "SpawnPoint :");
+
+                    player.sendMessage(ChatColor.BLUE + "   X :" + ChatColor.AQUA + plugin.getConfig().getString("SpawnPoint.locX"));
+                    player.sendMessage(ChatColor.BLUE + "   Y :" + ChatColor.AQUA + plugin.getConfig().getString("SpawnPoint.locY"));
+                    player.sendMessage(ChatColor.BLUE + "   Z :" + ChatColor.AQUA + plugin.getConfig().getString("SpawnPoint.locZ"));
+                    player.sendMessage(ChatColor.BLUE + "   Pitch :" + ChatColor.AQUA + plugin.getConfig().getString("SpawnPoint.pitch"));
+                    player.sendMessage(ChatColor.BLUE + "   Yaw :" + ChatColor.AQUA + plugin.getConfig().getString("SpawnPoint.yaw"));
+                    player.sendMessage(ChatColor.BLUE + "   World :" + ChatColor.AQUA + plugin.getConfig().getString("SpawnPoint.world"));
+
 
                 }
 

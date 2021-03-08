@@ -20,18 +20,7 @@ public class PapiExpansion extends PlaceholderExpansion {
 
     public PapiExpansion(KanaEventManager plugin) {
         this.plugin = plugin;
-        ConfigurationSection placeholderConfig = plugin.getConfig().getConfigurationSection("placeholder");
-        if (placeholderConfig != null) {
-            this.firstPlayerPlaceholder = placeholderConfig.getString("first-player");
-            this.secondPlayerPlaceholder = placeholderConfig.getString("second-player");
-            this.thirdlayerPlaceholder = placeholderConfig.getString("third-player");
-            this.defaultPlayerPlaceholder = placeholderConfig.getString("default");
-        } else {
-            this.firstPlayerPlaceholder = ChatColor.GOLD + "" + ChatColor.BOLD + "{playerName} &r&f- &3{playerScore}";
-            this.secondPlayerPlaceholder = ChatColor.GRAY + "" + ChatColor.BOLD + "{playerName} &r&f- &8{playerScore}";
-            this.thirdlayerPlaceholder = ChatColor.YELLOW + "" + ChatColor.BOLD + "{playerName} &r&f- &e{playerScore}";
-            this.defaultPlayerPlaceholder = ChatColor.BLUE + "" + ChatColor.BOLD + "{playerName} &r&f- &b{playerScore}";
-        }
+        this.reloadConfig();
 
     }
 
@@ -53,6 +42,21 @@ public class PapiExpansion extends PlaceholderExpansion {
 
     public boolean persist() {
         return true;
+    }
+
+    public void reloadConfig() {
+        ConfigurationSection placeholderConfig = plugin.getConfig().getConfigurationSection("placeholder");
+        if (placeholderConfig != null) {
+            this.firstPlayerPlaceholder = placeholderConfig.getString("first-player");
+            this.secondPlayerPlaceholder = placeholderConfig.getString("second-player");
+            this.thirdlayerPlaceholder = placeholderConfig.getString("third-player");
+            this.defaultPlayerPlaceholder = placeholderConfig.getString("default");
+        } else {
+            this.firstPlayerPlaceholder = ChatColor.GOLD + "" + ChatColor.BOLD + "{playerName} &r&f- &3{playerScore}";
+            this.secondPlayerPlaceholder = ChatColor.GRAY + "" + ChatColor.BOLD + "{playerName} &r&f- &8{playerScore}";
+            this.thirdlayerPlaceholder = ChatColor.YELLOW + "" + ChatColor.BOLD + "{playerName} &r&f- &e{playerScore}";
+            this.defaultPlayerPlaceholder = ChatColor.BLUE + "" + ChatColor.BOLD + "{playerName} &r&f- &b{playerScore}";
+        }
     }
 
     public String onPlaceholderRequest(Player player, String params) {
