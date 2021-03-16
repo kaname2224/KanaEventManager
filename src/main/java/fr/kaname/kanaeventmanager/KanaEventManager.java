@@ -40,6 +40,7 @@ public class KanaEventManager extends JavaPlugin {
     private ScoreManager scoreManager;
     private boolean isBetaEvent = false;
     private PapiExpansion placeholderExpansion;
+    private int eventID;
 
     @Override
     public void onEnable() {
@@ -219,5 +220,13 @@ public class KanaEventManager extends JavaPlugin {
 
     public void setBetaEvent(boolean isBetaEvent) {
         this.isBetaEvent = isBetaEvent;
+    }
+
+    public int getEventID() {
+        return this.eventID;
+    }
+
+    public void setEventID(int eventID) {
+        this.eventID = eventID;
     }
 }

@@ -142,17 +142,22 @@ public class EventManager {
         String rewardMsg;
         String eventName = plugin.getActualEventName();
 
-        plugin.getDatabaseManager().logEvent(true, eventName, plugin.getEventOwner(), winners, rewards, plugin.isBetaEvent());
+        int logID = plugin.getDatabaseManager().logEvent(true, plugin.getEventID(), plugin.getEventOwner(), plugin.isBetaEvent());
 
         Map<String, Integer> commandsList = new HashMap<>();
         StringBuilder rewardsString = new StringBuilder();
+
+        String logStringID = logID != -1 ? String.valueOf(logID) : ChatColor.RED + "Une erreur s'est produite !";
+
+        sender.sendMessage(plugin.getPrefix() + ChatColor.AQUA + "Log enregistré sous l'ID : " + logStringID);
 
         for (String rewardFull : rewards) {
             String rewardKey = rewardFull.split("-")[0];
             String rewardDisplayName = this.rewardsMap.get(rewardKey).get(1);
             int rewardAmount = Integer.parseInt(rewardFull.split("-")[1]);
-            commandsList.put(this.rewardsMap.get(rewardKey).get(0), rewardAmount);
 
+            List<String> command = new ArrayList<>();
+            command.add(this.rewardsMap.get(rewardKey).get(0));
             boolean isLastReward = rewards.lastIndexOf(rewardFull) == rewards.size() - 1;
 
             if (isLastReward && rewards.size() > 1) {
@@ -161,44 +166,35 @@ public class EventManager {
                 rewardsString.append(rewardAmount).append(" ").append(rewardDisplayName).append(" ");
             }
 
+            for (OfflinePlayer winner : winners) {
+                plugin.getScoreManager().incrementScore(winner.getUniqueId());
+
+                Bukkit.getScheduler().runTaskLaterAsynchronously(plugin, () -> {
+
+                    String cmdString = command.get(0);
+
+                    cmdString = cmdString.replace("{amount}", String.valueOf(rewardAmount));
+                    cmdString = cmdString.replace("{playerName}", Objects.requireNonNull(winner.getName()));
+                    sender.sendMessage(plugin.getPrefix() + ChatColor.AQUA + " Envoi de la commande : " + cmdString);
+                    plugin.getPluginMessageManager().sendBukkitCommand(cmdString, sender);
+
+                    plugin.getDatabaseManager().logRewards(logID, winner.getUniqueId(), rewardKey, rewardAmount);
+
+                }, 20L * rewardPing);
+
+            }
+
         }
 
         StringBuilder multipleWinnerMsg = new StringBuilder();
-        List<String> sendedCommandList = new ArrayList<>();
 
         for (OfflinePlayer winner : winners) {
-
-            plugin.getScoreManager().incrementScore(winner.getUniqueId());
-            Bukkit.getScheduler().runTaskLaterAsynchronously(plugin, () -> {
-
-
-                for (String command : commandsList.keySet()) {
-
-                    command = command.replace("{amount}", String.valueOf(commandsList.get(command)));
-                    command = command.replace("{playerName}", Objects.requireNonNull(winner.getName()));
-                    sender.sendMessage(plugin.getPrefix() + "[DEBUG]" + ChatColor.AQUA + " Envoi de la commande : " + command);
-                    sendedCommandList.add(command);
-                    plugin.getPluginMessageManager().sendBukkitCommand(command, sender);
-                }
-
-            }, 20L * rewardPing);
-
-            boolean isLastPlayer = winners.lastIndexOf(winner) == winners.size() - 1;
-
-            if (!isLastPlayer) {
+            if (winners.size() <= 1) {
                 multipleWinnerMsg.append(winner.getName()).append(" ");
             } else {
                 multipleWinnerMsg.append(this.lastRewardLinkWord).append(" ").append(winner.getName());
             }
         }
-
-        Bukkit.getScheduler().runTaskLaterAsynchronously(plugin, () -> {
-
-            for (String cmd : sendedCommandList) {
-                Bukkit.broadcastMessage(cmd);
-            }
-
-        }, 20L * rewardPing + 1);
 
         this.stopEvent(plugin.getEventOwner(), true);
 

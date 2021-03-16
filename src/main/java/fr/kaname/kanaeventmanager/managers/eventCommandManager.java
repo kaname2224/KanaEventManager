@@ -3,6 +3,7 @@ package fr.kaname.kanaeventmanager.managers;
 import fr.kaname.kanabungeetp.KanaBungeeTP;
 import fr.kaname.kanaeventmanager.KanaEventManager;
 import fr.kaname.kanaeventmanager.object.PapiExpansion;
+import fr.kaname.kanaeventmanager.object.eventObject;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -12,10 +13,7 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 public class eventCommandManager implements CommandExecutor {
 
@@ -196,6 +194,9 @@ public class eventCommandManager implements CommandExecutor {
                     String eventName = args[1];
                     plugin.setEventOwner(player);
 
+                    eventObject event = plugin.getDatabaseManager().getEvent(eventName);
+                    plugin.setEventID(event.getID());
+
                     if (args.length >= 4) {
                         arg = args[2];
                         if (args.length >= 5) {
@@ -246,6 +247,7 @@ public class eventCommandManager implements CommandExecutor {
                         String eventInfos = "";
                         eventInfos += "§9==== §bEvent's Infos §9====\n";
                         eventInfos += "§9Nom : §b" + plugin.getActualEventName() + "\n";
+                        eventInfos += "§9ID : §b" + plugin.getEventID() + "\n";
                         eventInfos += "§9Status : §b" + plugin.getServerOpenState() + "\n";
                         eventInfos += "§9Nombre de joueurs : §b" + plugin.getEventPlayerCount() + "\n";
                         eventInfos += "§9Créateur de l'Event : §b" + plugin.getEventOwner().getDisplayName() + "\n";

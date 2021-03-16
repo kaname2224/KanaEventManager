@@ -97,6 +97,22 @@ public class AutocompleteListener implements Listener {
                     }
                 }
 
+                if (command.startsWith(aliase + " kick")) {
+                    complete.clear();
+                    for (Player arg : Bukkit.getOnlinePlayers()) {
+                        String cmdComplete = aliase + " kick " + arg.getName();
+                        cmdComplete = cmdComplete.toLowerCase();
+
+                        if (cmdComplete.equals(command.toLowerCase()) || command.equals(aliase + " kick")) {
+                            return;
+                        }
+
+                        if (cmdComplete.startsWith(command)) {
+                            complete.add(arg.getName());
+                        }
+                    }
+                }
+
                 if (command.startsWith(aliase + " start")) {
                     complete.clear();
                     for (String arg : plugin.getDatabaseManager().getEventList()) {

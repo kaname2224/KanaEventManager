@@ -2,15 +2,17 @@ package fr.kaname.kanaeventmanager.object;
 
 public class eventObject {
 
-    String eventName;
-    String broadcast;
-    String displayName;
-    Double locX;
-    Double locY;
-    Double locZ;
+    private int ID;
+    private final String eventName;
+    private final String broadcast;
+    private final String displayName;
+    private final Double locX;
+    private final Double locY;
+    private final Double locZ;
 
-    public eventObject(String eventName, String broadcast, Double locX, Double locY, Double locZ, String displayName) {
+    public eventObject(int id, String eventName, String broadcast, Double locX, Double locY, Double locZ, String displayName) {
 
+        this.ID = id;
         this.eventName = eventName;
         this.broadcast = broadcast;
         this.displayName = displayName;
@@ -41,5 +43,9 @@ public class eventObject {
 
     public String getDisplayName() {
         return displayName;
+    }
+
+    public int getID() {
+        return this.ID;
     }
 }
