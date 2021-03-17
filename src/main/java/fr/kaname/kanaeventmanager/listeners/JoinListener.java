@@ -97,7 +97,7 @@ public class JoinListener implements Listener {
             msg.addExtra(ChatColor.AQUA + " pour la télécharger" + "\n" +
                     ChatColor.BLUE + "===================================");
 
-            player.spigot().sendMessage(msg);
+            player.sendMessage(msg);
 
         }
     }

@@ -2,8 +2,11 @@ package fr.kaname.kanaeventmanager.managers;
 
 import fr.kaname.kanabungeetp.KanaBungeeTP;
 import fr.kaname.kanaeventmanager.KanaEventManager;
-import fr.kaname.kanaeventmanager.object.PapiExpansion;
 import fr.kaname.kanaeventmanager.object.eventObject;
+import fr.kaname.kanaeventmanager.object.logObject;
+import jdk.jfr.Timespan;
+import net.md_5.bungee.api.chat.ClickEvent;
+import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -13,6 +16,8 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 public class eventCommandManager implements CommandExecutor {
@@ -345,6 +350,14 @@ public class eventCommandManager implements CommandExecutor {
                     plugin.sendBroadcast(player, args[1], isBetaEvent);
                 }
 
+                if (args[0].equalsIgnoreCase("logs")) {
+                    if (args.length > 1) {
+                        player.sendMessage("f");
+                    } else {
+                        plugin.getEventManager().get10LastEvent(sender);
+                    }
+                }
+
                 if (args[0].equalsIgnoreCase("winner") && args.length >= 2) {
                     List<OfflinePlayer> winners = new ArrayList<>();
                     List<String> rewards = new ArrayList<>();
@@ -356,7 +369,7 @@ public class eventCommandManager implements CommandExecutor {
 
                         if (!arg.equalsIgnoreCase("rewards") && !isRewards) {
 
-                            OfflinePlayer op = Bukkit.getPlayerExact(arg);
+                            OfflinePlayer op = Bukkit.getPlayer(plugin.getDatabaseManager().getPlayerUuid(args[1]));
                             winners.add(op);
 
                         } else if (arg.equalsIgnoreCase("rewards") &&  !isRewards){

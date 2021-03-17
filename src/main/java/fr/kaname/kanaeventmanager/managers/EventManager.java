@@ -2,13 +2,19 @@ package fr.kaname.kanaeventmanager.managers;
 
 import fr.kaname.kanaeventmanager.KanaEventManager;
 import fr.kaname.kanaeventmanager.object.eventObject;
+import fr.kaname.kanaeventmanager.object.logObject;
+import net.md_5.bungee.api.chat.ClickEvent;
+import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.OfflinePlayer;
+import org.bukkit.command.Command;
+import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 public class EventManager {
@@ -130,6 +136,30 @@ public class EventManager {
 
         plugin.resetPlayerList();
         player.sendMessage(plugin.getPrefix() + ChatColor.AQUA + "Event fermé !");
+    }
+
+    public void get10LastEvent(CommandSender sender) {
+        List<logObject> logObjects = plugin.getDatabaseManager().get10LastEvent();
+        TextComponent log10Msg = new TextComponent(plugin.getPrefix() + ChatColor.AQUA + "10 derniers events \n");
+
+
+        for (logObject log : logObjects) {
+
+            String timestamp = new SimpleDateFormat("dd/MM/yyyy").format(log.getTime());
+
+            eventObject event = plugin.getDatabaseManager().getEventByID(log.getEventID());
+
+            TextComponent logString = new TextComponent(ChatColor.AQUA + "" + log.getID() + " - Event : ");
+
+            TextComponent displayNameClick = new TextComponent(ChatColor.AQUA + "" + ChatColor.UNDERLINE + event.getDisplayName());
+            displayNameClick.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/event teleport " + event.getEventName()));
+            logString.addExtra(displayNameClick);
+            logString.addExtra(ChatColor.AQUA + " - Créé par : " + log.getOrganizer() +
+                    " - Le " + timestamp + "\n");
+            log10Msg.addExtra(logString);
+        }
+
+        sender.sendMessage(log10Msg);
     }
 
     public void setWinners(List<OfflinePlayer> winners, Player sender, List<String> rewards) {

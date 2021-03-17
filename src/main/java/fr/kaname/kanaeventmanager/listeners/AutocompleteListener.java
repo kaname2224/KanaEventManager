@@ -45,6 +45,7 @@ public class AutocompleteListener implements Listener {
             args1Complete.add("tp");
             args1Complete.add("delete");
             args1Complete.add("PluginStatus");
+            args1Complete.add("logs");
         }
         if (event.getSender().hasPermission("kanaeventmanager.command.leave") || event.getSender().hasPermission("kanaeventmanager.event.admin")) {
             args1Complete.add("leave");

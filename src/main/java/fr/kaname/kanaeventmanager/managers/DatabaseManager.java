@@ -2,6 +2,7 @@ package fr.kaname.kanaeventmanager.managers;
 
 import fr.kaname.kanaeventmanager.KanaEventManager;
 import fr.kaname.kanaeventmanager.object.eventObject;
+import fr.kaname.kanaeventmanager.object.logObject;
 import fr.kaname.kanaeventmanager.object.playerRank;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
@@ -174,16 +175,35 @@ public class DatabaseManager {
         }
     }
 
-    public void getLastEvent() {
+    public List<logObject> get10LastEvent() {
 
         ResultSet result = null;
+        List<logObject> logObjects = new ArrayList<>();
 
         try {
-            result = this.getStatement().executeQuery("SELECT * FROM");
+            result = this.getStatement().executeQuery("SELECT * FROM " + this.getLogsTable() + " ORDER BY `logID` DESC LIMIT 10");
+
+            if (result != null) {
+                while (result.next()) {
+
+                    logObject log = new logObject(
+                            result.getInt("logID"),
+                            result.getInt("eventID"),
+                            result.getString("organizer"),
+                            result.getTimestamp("time"),
+                            result.getBoolean("isBeta")
+                    );
+
+                    logObjects.add(log);
+
+                }
+            }
 
         } catch (SQLException e) {
             e.printStackTrace();
         }
+
+        return logObjects;
 
     }
 
@@ -239,6 +259,27 @@ public class DatabaseManager {
             if (datas.next()) {
 
                 int ID = datas.getInt("id");
+                String broadcast = datas.getString("Broadcast");
+                String displayName = datas.getString("DisplayName");
+                Double locX = datas.getDouble("LocX");
+                Double locY = datas.getDouble("LocY");
+                Double locZ = datas.getDouble("LocZ");
+
+                event = new eventObject(ID, eventName, broadcast, locX, locY, locZ, displayName);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return event;
+    }
+
+    public eventObject getEventByID(int ID) {
+        eventObject event = null;
+        try {
+            ResultSet datas = this.getStatement().executeQuery("SELECT * FROM " + this.getEventTable() + " WHERE `ID` = '" + ID + "'");
+            if (datas.next()) {
+
+                String eventName = datas.getString("Name");
                 String broadcast = datas.getString("Broadcast");
                 String displayName = datas.getString("DisplayName");
                 Double locX = datas.getDouble("LocX");
@@ -348,4 +389,6 @@ public class DatabaseManager {
             e.printStackTrace();
         }
     }
+
+
 }
