@@ -352,7 +352,11 @@ public class eventCommandManager implements CommandExecutor {
 
                 if (args[0].equalsIgnoreCase("logs")) {
                     if (args.length > 1) {
-                        player.sendMessage("f");
+
+                        if (args[1].equalsIgnoreCase("last")) {
+                            plugin.getEventManager().getLastEvent(sender);
+                        }
+
                     } else {
                         plugin.getEventManager().get10LastEvent(sender);
                     }

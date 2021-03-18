@@ -138,6 +138,30 @@ public class EventManager {
         player.sendMessage(plugin.getPrefix() + ChatColor.AQUA + "Event fermé !");
     }
 
+    public TextComponent formatLog(logObject log) {
+
+        eventObject event = plugin.getDatabaseManager().getEventByID(log.getEventID());
+        String timestamp = new SimpleDateFormat("dd/MM/yyyy").format(log.getTime());
+
+        TextComponent logString = new TextComponent(ChatColor.AQUA + "" + log.getID() + " - Event : ");
+
+        TextComponent displayNameClick = new TextComponent(ChatColor.AQUA + "" + ChatColor.UNDERLINE + event.getDisplayName());
+        displayNameClick.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/event teleport " + event.getEventName()));
+        logString.addExtra(displayNameClick);
+        logString.addExtra(ChatColor.AQUA + " - Créé par : " + log.getOrganizer() +
+                " - Le " + timestamp + "\n");
+
+        return logString;
+    }
+
+    public void getLastEvent(CommandSender sender) {
+        logObject lastLog = plugin.getDatabaseManager().getLastEvent();
+        TextComponent lastLogMsg = new TextComponent(plugin.getPrefix() + ChatColor.AQUA + "Dernier event effectué \n");
+        lastLogMsg.addExtra(this.formatLog(lastLog));
+        sender.sendMessage(lastLogMsg);
+
+    }
+
     public void get10LastEvent(CommandSender sender) {
         List<logObject> logObjects = plugin.getDatabaseManager().get10LastEvent();
         TextComponent log10Msg = new TextComponent(plugin.getPrefix() + ChatColor.AQUA + "10 derniers events \n");
@@ -145,19 +169,11 @@ public class EventManager {
 
         for (logObject log : logObjects) {
 
-            String timestamp = new SimpleDateFormat("dd/MM/yyyy").format(log.getTime());
+            log10Msg.addExtra(this.formatLog(log));
 
-            eventObject event = plugin.getDatabaseManager().getEventByID(log.getEventID());
-
-            TextComponent logString = new TextComponent(ChatColor.AQUA + "" + log.getID() + " - Event : ");
-
-            TextComponent displayNameClick = new TextComponent(ChatColor.AQUA + "" + ChatColor.UNDERLINE + event.getDisplayName());
-            displayNameClick.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/event teleport " + event.getEventName()));
-            logString.addExtra(displayNameClick);
-            logString.addExtra(ChatColor.AQUA + " - Créé par : " + log.getOrganizer() +
-                    " - Le " + timestamp + "\n");
-            log10Msg.addExtra(logString);
         }
+
+        log10Msg.addExtra(ChatColor.BLUE + "=======");
 
         sender.sendMessage(log10Msg);
     }

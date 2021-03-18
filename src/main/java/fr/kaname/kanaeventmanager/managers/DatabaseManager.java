@@ -175,6 +175,31 @@ public class DatabaseManager {
         }
     }
 
+    public logObject getLastEvent() {
+        ResultSet result;
+        logObject lastLog = null;
+
+        try {
+            result = this.getStatement().executeQuery("SELECT * FROM " + this.getLogsTable() + " ORDER BY `logID` DESC LIMIT 1");
+
+            if (result != null && result.next()) {
+
+                lastLog = new logObject(
+                        result.getInt("logID"),
+                        result.getInt("eventID"),
+                        result.getString("organizer"),
+                        result.getTimestamp("time"),
+                        result.getBoolean("isBeta")
+                );
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return lastLog;
+    }
+
     public List<logObject> get10LastEvent() {
 
         ResultSet result = null;
@@ -389,6 +414,7 @@ public class DatabaseManager {
             e.printStackTrace();
         }
     }
+
 
 
 }
