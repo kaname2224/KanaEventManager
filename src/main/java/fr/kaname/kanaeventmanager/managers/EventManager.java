@@ -167,8 +167,6 @@ public class EventManager {
             }
 
             for (OfflinePlayer winner : winners) {
-                plugin.getScoreManager().incrementScore(winner.getUniqueId());
-
                 Bukkit.getScheduler().runTaskLaterAsynchronously(plugin, () -> {
 
                     String cmdString = command.get(0);
@@ -188,12 +186,18 @@ public class EventManager {
 
         StringBuilder multipleWinnerMsg = new StringBuilder();
 
+        int winnerCount = 1;
         for (OfflinePlayer winner : winners) {
-            if (winners.size() <= 1) {
-                multipleWinnerMsg.append(winner.getName()).append(" ");
+
+            if (winners.size() != winnerCount) {
+                multipleWinnerMsg.append(winner.getName()).append(", ");
             } else {
                 multipleWinnerMsg.append(this.lastRewardLinkWord).append(" ").append(winner.getName());
             }
+
+            plugin.getScoreManager().incrementScore(winner.getUniqueId());
+            winnerCount++;
+
         }
 
         this.stopEvent(plugin.getEventOwner(), true);
