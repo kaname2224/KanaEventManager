@@ -5,6 +5,7 @@ import fr.kaname.kanaeventmanager.object.eventObject;
 import fr.kaname.kanaeventmanager.object.logObject;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.TextComponent;
+import net.milkbowl.vault.chat.Chat;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -148,10 +149,34 @@ public class EventManager {
         TextComponent displayNameClick = new TextComponent(ChatColor.AQUA + "" + ChatColor.UNDERLINE + event.getDisplayName());
         displayNameClick.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/event teleport " + event.getEventName()));
         logString.addExtra(displayNameClick);
-        logString.addExtra(ChatColor.AQUA + " - Créé par : " + log.getOrganizer() +
+        logString.addExtra(ChatColor.AQUA + " - Fait par : " + log.getOrganizer() +
                 " - Le " + timestamp + "\n");
 
         return logString;
+    }
+
+    public TextComponent getDetailedEvent(int id) {
+
+        logObject log = plugin.getDatabaseManager().getLogByID(id);
+        eventObject event = plugin.getDatabaseManager().getEventByID(log.getEventID());
+
+        TextComponent detailedEventString = new TextComponent(ChatColor.BLUE + "Log N° " + ChatColor.AQUA + log.getID() +
+                ChatColor.BLUE + " Event : ");
+
+        TextComponent clickableEventName = new TextComponent(ChatColor.AQUA + "" + ChatColor.UNDERLINE + event.getDisplayName());
+        clickableEventName.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/event teleport " + event.getEventName()));
+
+        detailedEventString.addExtra(clickableEventName);
+        detailedEventString.addExtra( ChatColor.RESET + "" + ChatColor.BLUE + "\n Fait par : ");
+
+        TextComponent clickableEventOrganizer = new TextComponent(ChatColor.AQUA + "" + ChatColor.UNDERLINE + log.getOrganizer());
+        clickableEventOrganizer.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/event"));
+
+        detailedEventString.addExtra(clickableEventOrganizer);
+
+        return detailedEventString;
+
+
     }
 
     public void getLastEvent(CommandSender sender) {

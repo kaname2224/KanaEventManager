@@ -9,6 +9,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.server.TabCompleteEvent;
 
+import java.nio.file.attribute.UserPrincipalNotFoundException;
 import java.util.*;
 
 public class AutocompleteListener implements Listener {
@@ -63,12 +64,20 @@ public class AutocompleteListener implements Listener {
         argsScoreComplete.add("add");
         argsScoreComplete.add("remove");
 
+        List<String> argsLogsComplete = new ArrayList<>();
+        argsLogsComplete.add("last");
+        argsLogsComplete.add("view");
+        argsLogsComplete.add("player");
+        argsLogsComplete.add("event");
+
         if (event.getSender() instanceof Player) {
             Player player = (Player) event.getSender();
             for (String aliase : eventAliases) {
 
                 if (!command.startsWith(aliase)) {
                     return;
+
+
                 }
 
                 if (command.startsWith(aliase)) {
@@ -96,25 +105,40 @@ public class AutocompleteListener implements Listener {
                             complete.add(arg);
                         }
                     }
-                }
 
-                if (command.startsWith(aliase + " kick")) {
+
+                } else if (command.startsWith(aliase + " logs")) {
                     complete.clear();
-                    for (Player arg : Bukkit.getOnlinePlayers()) {
-                        String cmdComplete = aliase + " kick " + arg.getName();
-                        cmdComplete = cmdComplete.toLowerCase();
+                    for (String arg : argsLogsComplete) {
+                        String cmdComplete = aliase + " logs " + arg;
 
-                        if (cmdComplete.equals(command.toLowerCase()) || command.equals(aliase + " kick")) {
+                        if (cmdComplete.equalsIgnoreCase(command) || command.equalsIgnoreCase(aliase + " logs")) {
                             return;
                         }
 
-                        if (cmdComplete.startsWith(command)) {
+                        if (cmdComplete.startsWith(command.toLowerCase())) {
+                            complete.add(arg);
+                        }
+                    }
+
+
+                } else if (command.startsWith(aliase + " kick")) {
+                    complete.clear();
+                    for (Player arg : Bukkit.getOnlinePlayers()) {
+                        String cmdComplete = aliase + " kick " + arg.getName();
+
+                        if (cmdComplete.equalsIgnoreCase(command) || command.equalsIgnoreCase(aliase + " kick")) {
+                            return;
+
+                        }
+
+                        if (cmdComplete.startsWith(command.toLowerCase())) {
                             complete.add(arg.getName());
                         }
                     }
-                }
 
-                if (command.startsWith(aliase + " start")) {
+
+                } else if (command.startsWith(aliase + " start")) {
                     complete.clear();
                     for (String arg : plugin.getDatabaseManager().getEventList()) {
                         String cmdComplete = aliase + " start " + arg.toLowerCase();
@@ -139,9 +163,9 @@ public class AutocompleteListener implements Listener {
                             break;
                         }
                     }
-                }
 
-                if(command.startsWith(aliase + " setLobbyServer")) {
+
+                } else if(command.startsWith(aliase + " setLobbyServer")) {
                     complete.clear();
                     for (Servers srv : plugin.getKbtpPlugin().getDatabaseManager().getServersList()) {
 
@@ -152,9 +176,9 @@ public class AutocompleteListener implements Listener {
                             complete.add(serverName);
                         }
                     }
-                }
 
-                if(command.startsWith(aliase + " winner")) {
+
+                } else if(command.startsWith(aliase + " winner")) {
                     complete.clear();
 
                     List<String> args = Arrays.asList(command.split(" "));
@@ -191,9 +215,8 @@ public class AutocompleteListener implements Listener {
                         }
                     }
 
-                }
 
-                if (command.startsWith(aliase + " delete")) {
+                } else if (command.startsWith(aliase + " delete")) {
                     complete.clear();
                     for (String eventName : plugin.getDatabaseManager().getEventList()) {
                         String cmdComplete = aliase + " delete " + eventName.toLowerCase();
@@ -201,9 +224,9 @@ public class AutocompleteListener implements Listener {
                             complete.add(eventName);
                         }
                     }
-                }
 
-                if (command.startsWith(aliase + " score")) {
+
+                } else if (command.startsWith(aliase + " score")) {
                     complete.clear();
                     for (OfflinePlayer offlinePlayer : Bukkit.getOfflinePlayers()) {
                         String cmdComplete = aliase + " score " + offlinePlayer.getName().toLowerCase();
@@ -222,9 +245,9 @@ public class AutocompleteListener implements Listener {
                         }
 
                     }
-                }
 
-                if (command.startsWith(aliase + " broadcast") || command.startsWith(aliase + " bc")) {
+
+                } else if (command.startsWith(aliase + " broadcast") || command.startsWith(aliase + " bc")) {
                     complete.clear();
                     for (String eventName : plugin.getDatabaseManager().getEventList()) {
                         String cmdComplete = aliase + " broadcast " + eventName.toLowerCase();

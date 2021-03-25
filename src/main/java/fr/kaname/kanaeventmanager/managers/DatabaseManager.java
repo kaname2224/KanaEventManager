@@ -175,12 +175,37 @@ public class DatabaseManager {
         }
     }
 
+    public logObject getLogByID(int id) {
+
+        logObject log = null;
+
+        try {
+            ResultSet result = this.getStatement().executeQuery("SELECT * FROM " + this.getLogsTable() +
+                    " WHERE `logID` = '" + id + "' LIMIT 1");
+
+            if (result != null && result.next()) {
+                log = new logObject(
+                        result.getInt("logID"),
+                        result.getInt("eventID"),
+                        result.getString("organizer"),
+                        result.getTimestamp("time"),
+                        result.getBoolean("isBeta")
+                );
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return log;
+
+    }
+
     public logObject getLastEvent() {
-        ResultSet result;
         logObject lastLog = null;
 
         try {
-            result = this.getStatement().executeQuery("SELECT * FROM " + this.getLogsTable() + " ORDER BY `logID` DESC LIMIT 1");
+            ResultSet result = this.getStatement().executeQuery("SELECT * FROM " + this.getLogsTable() + " ORDER BY `logID` DESC LIMIT 1");
 
             if (result != null && result.next()) {
 

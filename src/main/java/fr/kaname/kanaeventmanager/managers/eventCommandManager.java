@@ -355,6 +355,21 @@ public class eventCommandManager implements CommandExecutor {
 
                         if (args[1].equalsIgnoreCase("last")) {
                             plugin.getEventManager().getLastEvent(sender);
+
+                        } else if (args[1].equalsIgnoreCase("view") && args.length > 2) {
+
+                            try {
+                                int logID = Integer.parseInt(args[2]);
+                                if (logID >= 0) {
+                                    player.sendMessage(plugin.getEventManager().getDetailedEvent(logID));
+                                } else {
+                                    player.sendMessage("Le nombre entré doit être positif");
+                                }
+
+                            } catch (NumberFormatException e) {
+                                e.printStackTrace();
+                                player.sendMessage("Merci de rentrer un nombre valable dans le champs ID");
+                            }
                         }
 
                     } else {
