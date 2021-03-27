@@ -4,7 +4,9 @@ import fr.kaname.kanaeventmanager.KanaEventManager;
 import fr.kaname.kanaeventmanager.object.eventObject;
 import fr.kaname.kanaeventmanager.object.logObject;
 import net.md_5.bungee.api.chat.ClickEvent;
+import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
+import net.md_5.bungee.api.chat.hover.content.Text;
 import net.milkbowl.vault.chat.Chat;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -15,6 +17,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 
+import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -144,7 +147,13 @@ public class EventManager {
         eventObject event = plugin.getDatabaseManager().getEventByID(log.getEventID());
         String timestamp = new SimpleDateFormat("dd/MM/yyyy").format(log.getTime());
 
-        TextComponent logString = new TextComponent(ChatColor.AQUA + "" + log.getID() + " - Event : ");
+        TextComponent logString = new TextComponent();
+
+        TextComponent ClickableID = new TextComponent(ChatColor.AQUA + "" + ChatColor.UNDERLINE + String.valueOf(log.getID()));
+        ClickableID.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/event logs view " + log.getID()));
+
+        logString.addExtra(ClickableID);
+        logString.addExtra(ChatColor.RESET + "" + ChatColor.AQUA + " - Event : ");
 
         TextComponent displayNameClick = new TextComponent(ChatColor.AQUA + "" + ChatColor.UNDERLINE + event.getDisplayName());
         displayNameClick.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/event teleport " + event.getEventName()));
@@ -159,20 +168,57 @@ public class EventManager {
 
         logObject log = plugin.getDatabaseManager().getLogByID(id);
         eventObject event = plugin.getDatabaseManager().getEventByID(log.getEventID());
+        String time = new SimpleDateFormat("dd/MM/yyyy").format(log.getTime());
 
-        TextComponent detailedEventString = new TextComponent(ChatColor.BLUE + "Log N° " + ChatColor.AQUA + log.getID() +
+        TextComponent detailedEventString = new TextComponent(ChatColor.BLUE + "=====\n" + "Log N° " + ChatColor.AQUA + log.getID() +
                 ChatColor.BLUE + " Event : ");
 
-        TextComponent clickableEventName = new TextComponent(ChatColor.AQUA + "" + ChatColor.UNDERLINE + event.getDisplayName());
+        TextComponent clickableEventName = new TextComponent(ChatColor.AQUA + event.getDisplayName());
         clickableEventName.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/event teleport " + event.getEventName()));
-
+        clickableEventName.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new Text(ChatColor.BLUE + "Se téléporter à l'event")));
         detailedEventString.addExtra(clickableEventName);
-        detailedEventString.addExtra( ChatColor.RESET + "" + ChatColor.BLUE + "\n Fait par : ");
 
-        TextComponent clickableEventOrganizer = new TextComponent(ChatColor.AQUA + "" + ChatColor.UNDERLINE + log.getOrganizer());
-        clickableEventOrganizer.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/event"));
+        detailedEventString.addExtra( ChatColor.RESET + "" + ChatColor.BLUE + "\nFait par : ");
 
+        TextComponent clickableEventOrganizer = new TextComponent(ChatColor.AQUA + log.getOrganizer());
+        clickableEventOrganizer.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/event logs player " + log.getOrganizer()));
+        clickableEventOrganizer.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new Text(ChatColor.BLUE + "Voir les logs de : " + ChatColor.AQUA + log.getOrganizer())));
         detailedEventString.addExtra(clickableEventOrganizer);
+
+        detailedEventString.addExtra(ChatColor.RESET + "" + ChatColor.BLUE + "\nLe : ");
+
+        TextComponent clickableTime = new TextComponent(ChatColor.AQUA + time);
+        clickableTime.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/event logs time " + time));
+        clickableTime.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new Text(ChatColor.BLUE + "Voir les logs du : " + ChatColor.AQUA + time)));
+        detailedEventString.addExtra(clickableTime);
+
+        detailedEventString.addExtra(ChatColor.RESET + "" + ChatColor.BLUE + "\nGagnant(s) : ");
+
+        StringBuilder winnerString = new StringBuilder();
+        winnerString.append(ChatColor.RESET).append(ChatColor.AQUA);
+
+        List<OfflinePlayer> winnerList = plugin.getDatabaseManager().getLogsWinnersByID(log.getID());
+
+        for (OfflinePlayer winner : winnerList) {
+            winnerString.append(winner.getName() + " ");
+        }
+
+        detailedEventString.addExtra(String.valueOf(winnerString));
+
+        detailedEventString.addExtra(ChatColor.RESET + "" + ChatColor.BLUE + "\nRécompense(s) : ");
+
+        StringBuilder rewardsString = new StringBuilder();
+        rewardsString.append(ChatColor.RESET).append(ChatColor.AQUA);
+
+        Map<String, Integer> rewardsMap = plugin.getDatabaseManager().getLogsRewardsByID(log.getID());
+
+        for (String reward : rewardsMap.keySet()) {
+            rewardsString.append(reward).append("x").append(rewardsMap.get(reward)).append(" / ");
+        }
+
+        detailedEventString.addExtra(String.valueOf(rewardsString));
+
+        detailedEventString.addExtra(ChatColor.RESET + "" + ChatColor.BLUE + "\n=====");
 
         return detailedEventString;
 

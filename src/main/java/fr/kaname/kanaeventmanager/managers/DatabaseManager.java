@@ -175,6 +175,53 @@ public class DatabaseManager {
         }
     }
 
+    public List<OfflinePlayer> getLogsWinnersByID(int logID) {
+
+        List<OfflinePlayer> WinnersUUID = new ArrayList<>();
+
+        try {
+            ResultSet result = this.getStatement().executeQuery("SELECT `WinnerUUID` FROM " + this.getLogsTable() +
+                    "_rewards WHERE `logID` = '" + logID + "'");
+
+            while (result.next()) {
+
+                OfflinePlayer op = Bukkit.getOfflinePlayer(UUID.fromString(result.getString("WinnerUUID")));
+                if (!WinnersUUID.contains(op)) {
+                    WinnersUUID.add(op);
+                }
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return WinnersUUID;
+    }
+
+    public Map<String, Integer> getLogsRewardsByID(int logID) {
+
+        Map<String, Integer> RewardsMap = new HashMap<String, Integer>();
+
+        try {
+            ResultSet result = this.getStatement().executeQuery("SELECT `RewardKey`, `RewardAmount` FROM " + this.getLogsTable() +
+                    "_rewards WHERE `logID` = '" + logID + "'");
+
+            while (result.next()) {
+
+                String reward = result.getString("RewardKey");
+                int amount = result.getInt("RewardAmount");
+                if (!RewardsMap.containsKey(reward)) {
+                    RewardsMap.put(reward, amount);
+                }
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return RewardsMap;
+    }
+
     public logObject getLogByID(int id) {
 
         logObject log = null;
