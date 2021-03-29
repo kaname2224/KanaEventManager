@@ -9,10 +9,7 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.configuration.Configuration;
 import org.bukkit.entity.Player;
 
-import java.sql.DriverManager;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 import java.util.*;
 
 public class DatabaseManager {
@@ -389,6 +386,30 @@ public class DatabaseManager {
             e.printStackTrace();
         }
         return event;
+    }
+
+
+
+    public List<logObject> getLogsByPseudo(String pseudo) {
+        List<logObject> logObjectList = new ArrayList<>();
+        try {
+            ResultSet datas = this.getStatement().executeQuery("SELECT * FROM " + this.getLogsTable() +
+                    " WHERE `Organizer` = '" + pseudo + "' ORDER BY `logID` DESC LIMIT 10 ");
+            while (datas.next()) {
+
+                int id = datas.getInt("logID");
+                int eventID = datas.getInt("eventID");
+                String organizer = datas.getString("organizer");
+                Timestamp time = datas.getTimestamp("time");
+                boolean isBeta = datas.getBoolean("isBeta");
+
+                logObjectList.add(new logObject(id, eventID, organizer, time, isBeta));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return logObjectList;
     }
 
     public UUID getPlayerUuid(String playerName) {

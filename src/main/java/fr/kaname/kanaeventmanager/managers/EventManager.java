@@ -329,4 +329,19 @@ public class EventManager {
         plugin.sendWinBroadcast(sender, rewardMsg);
 
     }
+
+    public TextComponent getEventByPlayer(String pseudo) {
+
+        TextComponent logText = new TextComponent(ChatColor.BLUE + "10 derniers events de : " + ChatColor.AQUA + pseudo + "\n");
+        List<logObject> logObjects = plugin.getDatabaseManager().getLogsByPseudo(pseudo);
+
+        for (logObject log : logObjects) {
+            TextComponent logString = this.formatLog(log);
+            logText.addExtra(logString);
+        }
+
+        logText.addExtra(ChatColor.BLUE + "=====");
+        return logText;
+
+    }
 }

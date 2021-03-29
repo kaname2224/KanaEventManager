@@ -3,8 +3,8 @@
   <component name="CompilerConfiguration">
     <annotationProcessing>
       <profile name="Annotation profile for KanaEventManager" enabled="true">
-        <sourceOutputDir name="../../../Documents/Programmation/javaPluginMc/Serveurs_Mc/1.15.2/Lobby 1.15.2/plugins/generated-sources/annotations" />
-        <sourceTestOutputDir name="../../../Documents/Programmation/javaPluginMc/Serveurs_Mc/1.15.2/Lobby 1.15.2/plugins/generated-test-sources/test-annotations" />
+        <sourceOutputDir name="../Serveur 1.16.5/plugins/generated-sources/annotations" />
+        <sourceTestOutputDir name="../Serveur 1.16.5/plugins/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
         <module name="KanaEventManager" />
       </profile>

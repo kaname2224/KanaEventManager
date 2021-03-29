@@ -370,6 +370,11 @@ public class eventCommandManager implements CommandExecutor {
                                 e.printStackTrace();
                                 player.sendMessage("Merci de rentrer un nombre valable dans le champs ID");
                             }
+                        } else if (args[1].equalsIgnoreCase("player") && args.length > 2) {
+
+                            String pseudo = args[2];
+                            player.sendMessage(plugin.getEventManager().getEventByPlayer(pseudo));
+
                         }
 
                     } else {
