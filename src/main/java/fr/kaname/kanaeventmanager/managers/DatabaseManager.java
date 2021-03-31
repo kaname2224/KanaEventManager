@@ -10,6 +10,7 @@ import org.bukkit.configuration.Configuration;
 import org.bukkit.entity.Player;
 
 import java.sql.*;
+import java.sql.Date;
 import java.util.*;
 
 public class DatabaseManager {
@@ -120,7 +121,7 @@ public class DatabaseManager {
                 "`logID` INT(11) NOT NULL AUTO_INCREMENT," +
                 "`Organizer` VARCHAR(45) NOT NULL," +
                 "`eventID` INT NOT NULL," +
-                "`time` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP," +
+                "`time` DATE NOT NULL," +
                 "`isBeta` BOOLEAN DEFAULT 0," +
                 "PRIMARY KEY (`logID`)," +
                 "FOREIGN KEY (`eventID`) REFERENCES " + this.getEventTable() + "(`id`)" +
@@ -143,7 +144,7 @@ public class DatabaseManager {
         int logID = -1;
         if (isWinnerCommand) {
             try {
-                this.getStatement().execute("INSERT INTO " + this.getLogsTable() + "(`Organizer`,`eventID`,`isBeta`)" +
+                this.getStatement().execute("INSERT INTO " + this.getLogsTable() + "(`Organizer`,`eventID`,`time`, `isBeta`)" +
                         "VALUES('" + eventOwner.getName() + "','" + eventID + "','" + BetaEventValue + "')"
                 );
 
@@ -232,7 +233,7 @@ public class DatabaseManager {
                         result.getInt("logID"),
                         result.getInt("eventID"),
                         result.getString("organizer"),
-                        result.getTimestamp("time"),
+                        result.getDate("time"),
                         result.getBoolean("isBeta")
                 );
             }
@@ -244,6 +245,7 @@ public class DatabaseManager {
         return log;
 
     }
+
 
     public logObject getLastEvent() {
         logObject lastLog = null;
@@ -257,7 +259,7 @@ public class DatabaseManager {
                         result.getInt("logID"),
                         result.getInt("eventID"),
                         result.getString("organizer"),
-                        result.getTimestamp("time"),
+                        result.getDate("time"),
                         result.getBoolean("isBeta")
                 );
             }
@@ -269,13 +271,13 @@ public class DatabaseManager {
         return lastLog;
     }
 
-    public List<logObject> get10LastEvent() {
+    public List<logObject> getLogsByDate(String dateString) {
 
-        ResultSet result = null;
         List<logObject> logObjects = new ArrayList<>();
 
         try {
-            result = this.getStatement().executeQuery("SELECT * FROM " + this.getLogsTable() + " ORDER BY `logID` DESC LIMIT 10");
+            ResultSet result = this.getStatement().executeQuery("SELECT * FROM " + this.getLogsTable() + " WHERE `time` = '" +
+                    dateString + "' ORDER BY `logID` DESC LIMIT 10");
 
             if (result != null) {
                 while (result.next()) {
@@ -284,7 +286,37 @@ public class DatabaseManager {
                             result.getInt("logID"),
                             result.getInt("eventID"),
                             result.getString("organizer"),
-                            result.getTimestamp("time"),
+                            result.getDate("time"),
+                            result.getBoolean("isBeta")
+                    );
+
+                    logObjects.add(log);
+
+                }
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return logObjects;
+    }
+
+    public List<logObject> get10LastEvent() {
+
+        List<logObject> logObjects = new ArrayList<>();
+
+        try {
+            ResultSet result = this.getStatement().executeQuery("SELECT * FROM " + this.getLogsTable() + " ORDER BY `logID` DESC LIMIT 10");
+
+            if (result != null) {
+                while (result.next()) {
+
+                    logObject log = new logObject(
+                            result.getInt("logID"),
+                            result.getInt("eventID"),
+                            result.getString("organizer"),
+                            result.getDate("time"),
                             result.getBoolean("isBeta")
                     );
 
@@ -400,7 +432,7 @@ public class DatabaseManager {
                 int id = datas.getInt("logID");
                 int eventID = datas.getInt("eventID");
                 String organizer = datas.getString("organizer");
-                Timestamp time = datas.getTimestamp("time");
+                Date time = datas.getDate("time");
                 boolean isBeta = datas.getBoolean("isBeta");
 
                 logObjectList.add(new logObject(id, eventID, organizer, time, isBeta));
@@ -507,7 +539,6 @@ public class DatabaseManager {
             e.printStackTrace();
         }
     }
-
 
 
 }

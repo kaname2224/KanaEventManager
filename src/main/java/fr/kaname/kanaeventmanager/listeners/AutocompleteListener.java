@@ -69,6 +69,8 @@ public class AutocompleteListener implements Listener {
         argsLogsComplete.add("view");
         argsLogsComplete.add("player");
         argsLogsComplete.add("event");
+        argsLogsComplete.add("date");
+        argsLogsComplete.add("time");
 
         if (event.getSender() instanceof Player) {
             Player player = (Player) event.getSender();

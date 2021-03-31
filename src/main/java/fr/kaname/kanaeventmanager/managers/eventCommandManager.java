@@ -375,6 +375,15 @@ public class eventCommandManager implements CommandExecutor {
                             String pseudo = args[2];
                             player.sendMessage(plugin.getEventManager().getEventByPlayer(pseudo));
 
+                        } else if (args[1].equalsIgnoreCase("date") && args.length > 2) {
+                            String affDateString = args[2];
+                            List<String> dateList = Arrays.asList(args[2].split("/"));
+                            if (dateList.size() == 3) {
+                                String dateString = dateList.get(2) + "-" + dateList.get(1) + "-" + dateList.get(0);
+                                player.sendMessage(plugin.getEventManager().getEventByDate(dateString, affDateString));
+                            } else {
+                                player.sendMessage(plugin.getPrefix() + ChatColor.RED + "Format de date invalide (Format requis : dd/MM/YYYY)");
+                            }
                         }
 
                     } else {

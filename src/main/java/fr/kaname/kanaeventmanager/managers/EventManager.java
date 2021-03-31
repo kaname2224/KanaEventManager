@@ -16,6 +16,7 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
+import org.checkerframework.checker.units.qual.A;
 
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
@@ -149,18 +150,37 @@ public class EventManager {
 
         TextComponent logString = new TextComponent();
 
-        TextComponent ClickableID = new TextComponent(ChatColor.AQUA + "" + ChatColor.UNDERLINE + String.valueOf(log.getID()));
+        TextComponent ClickableID = new TextComponent(ChatColor.AQUA + String.valueOf(log.getID()));
         ClickableID.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/event logs view " + log.getID()));
+        ClickableID.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new Text(ChatColor.BLUE + "Voir les informations détaillées")));
 
         logString.addExtra(ClickableID);
         logString.addExtra(ChatColor.RESET + "" + ChatColor.AQUA + " - Event : ");
 
-        TextComponent displayNameClick = new TextComponent(ChatColor.AQUA + "" + ChatColor.UNDERLINE + event.getDisplayName());
+        TextComponent displayNameClick = new TextComponent(ChatColor.AQUA + event.getDisplayName());
         displayNameClick.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/event teleport " + event.getEventName()));
-        logString.addExtra(displayNameClick);
-        logString.addExtra(ChatColor.AQUA + " - Fait par : " + log.getOrganizer() +
-                " - Le " + timestamp + "\n");
+        displayNameClick.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new Text(ChatColor.BLUE + "Se téléporter à l'event " +
+            ChatColor.AQUA + event.getDisplayName())));
 
+        logString.addExtra(displayNameClick);
+        logString.addExtra(ChatColor.RESET + "" + ChatColor.AQUA + " - Fait par : ");
+
+        TextComponent organizerClick = new TextComponent(ChatColor.AQUA + log.getOrganizer());
+        organizerClick.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new Text(ChatColor.BLUE +
+                "Voir les logs de : " + ChatColor.AQUA + log.getOrganizer())));
+        organizerClick.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/event logs player " + log.getOrganizer()));
+
+        logString.addExtra(organizerClick);
+        logString.addExtra(ChatColor.RESET + "" + ChatColor.AQUA + " - Le : ");
+
+        TextComponent timeClick = new TextComponent(ChatColor.AQUA + timestamp);
+        timeClick.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new Text(ChatColor.BLUE +
+                "Voir les logs du : " + ChatColor.AQUA + timestamp)));
+        timeClick.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/event logs date " + timestamp));
+
+        logString.addExtra(timeClick);
+
+        logString.addExtra("\n");
         return logString;
     }
 
@@ -188,7 +208,7 @@ public class EventManager {
         detailedEventString.addExtra(ChatColor.RESET + "" + ChatColor.BLUE + "\nLe : ");
 
         TextComponent clickableTime = new TextComponent(ChatColor.AQUA + time);
-        clickableTime.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/event logs time " + time));
+        clickableTime.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/event logs date " + time));
         clickableTime.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new Text(ChatColor.BLUE + "Voir les logs du : " + ChatColor.AQUA + time)));
         detailedEventString.addExtra(clickableTime);
 
@@ -334,6 +354,21 @@ public class EventManager {
 
         TextComponent logText = new TextComponent(ChatColor.BLUE + "10 derniers events de : " + ChatColor.AQUA + pseudo + "\n");
         List<logObject> logObjects = plugin.getDatabaseManager().getLogsByPseudo(pseudo);
+
+        for (logObject log : logObjects) {
+            TextComponent logString = this.formatLog(log);
+            logText.addExtra(logString);
+        }
+
+        logText.addExtra(ChatColor.BLUE + "=====");
+        return logText;
+
+    }
+
+    public TextComponent getEventByDate(String dateString, String affDateString) {
+
+        TextComponent logText = new TextComponent(ChatColor.BLUE + "10 derniers events du : " + ChatColor.AQUA + affDateString  + "\n");
+        List<logObject> logObjects = plugin.getDatabaseManager().getLogsByDate(dateString);
 
         for (logObject log : logObjects) {
             TextComponent logString = this.formatLog(log);

@@ -1,5 +1,6 @@
 package fr.kaname.kanaeventmanager.object;
 
+import java.sql.Date;
 import java.sql.Timestamp;
 
 public class logObject {
@@ -7,10 +8,10 @@ public class logObject {
     private final int ID;
     private final int eventID;
     private final String organizer;
-    private final Timestamp time;
+    private final Date time;
     private final boolean isBeta;
 
-    public logObject(int id, int eventID, String organizer, Timestamp time, boolean isBeta) {
+    public logObject(int id, int eventID, String organizer, Date time, boolean isBeta) {
 
         this.ID = id;
         this.eventID = eventID;
@@ -31,7 +32,7 @@ public class logObject {
         return organizer;
     }
 
-    public Timestamp getTime() {
+    public Date getTime() {
         return time;
     }
 
