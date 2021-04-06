@@ -8,6 +8,7 @@ import fr.kaname.kanaeventmanager.listeners.JoinListener;
 import fr.kaname.kanaeventmanager.managers.*;
 import fr.kaname.kanaeventmanager.object.PapiExpansion;
 import fr.kaname.kanaeventmanager.object.eventObject;
+import me.clip.placeholderapi.expansion.PlaceholderExpansion;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -37,11 +38,15 @@ public class KanaEventManager extends JavaPlugin {
     private Player eventOwner;
     private PluginMessageManager pluginMessageManager;
     private ScoreManager scoreManager;
+    private boolean isBetaEvent = false;
+    private PapiExpansion placeholderExpansion;
+    private int eventID;
 
     @Override
     public void onEnable() {
         saveDefaultConfig();
-        new PapiExpansion(this).register();
+        this.placeholderExpansion = new PapiExpansion(this);
+        this.placeholderExpansion.register();
         this.getLogger().info("Plugin Enabled !");
         this.db = new DatabaseManager(this);
         this.db.ConnectDatabase();
@@ -54,6 +59,10 @@ public class KanaEventManager extends JavaPlugin {
         this.pluginMessageManager = new PluginMessageManager(this);
         this.scoreManager = new ScoreManager(this);
         this.getServer().getMessenger().registerOutgoingPluginChannel(this, "BungeeCord");
+    }
+
+    public PapiExpansion getPlaceholderExpansion() {
+        return placeholderExpansion;
     }
 
     public KanaBungeeTP getKbtpPlugin() {
@@ -136,6 +145,10 @@ public class KanaEventManager extends JavaPlugin {
         this.eventOwner = eventOwner;
     }
 
+    public boolean isBetaEvent() {
+        return isBetaEvent;
+    }
+
     public void sendSpawn(Player player) {
 
         FileConfiguration config = this.getConfig();
@@ -203,5 +216,17 @@ public class KanaEventManager extends JavaPlugin {
         out.writeUTF(text);
 
         player.sendPluginMessage(this, "BungeeCord", out.toByteArray());
+    }
+
+    public void setBetaEvent(boolean isBetaEvent) {
+        this.isBetaEvent = isBetaEvent;
+    }
+
+    public int getEventID() {
+        return this.eventID;
+    }
+
+    public void setEventID(int eventID) {
+        this.eventID = eventID;
     }
 }

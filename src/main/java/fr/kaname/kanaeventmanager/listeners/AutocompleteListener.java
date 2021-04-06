@@ -44,6 +44,7 @@ public class AutocompleteListener implements Listener {
             args1Complete.add("score");
             args1Complete.add("tp");
             args1Complete.add("delete");
+            args1Complete.add("PluginStatus");
         }
         if (event.getSender().hasPermission("kanaeventmanager.command.leave") || event.getSender().hasPermission("kanaeventmanager.event.admin")) {
             args1Complete.add("leave");
@@ -92,6 +93,22 @@ public class AutocompleteListener implements Listener {
 
                         if (cmdComplete.startsWith(command)) {
                             complete.add(arg);
+                        }
+                    }
+                }
+
+                if (command.startsWith(aliase + " kick")) {
+                    complete.clear();
+                    for (Player arg : Bukkit.getOnlinePlayers()) {
+                        String cmdComplete = aliase + " kick " + arg.getName();
+                        cmdComplete = cmdComplete.toLowerCase();
+
+                        if (cmdComplete.equals(command.toLowerCase()) || command.equals(aliase + " kick")) {
+                            return;
+                        }
+
+                        if (cmdComplete.startsWith(command)) {
+                            complete.add(arg.getName());
                         }
                     }
                 }

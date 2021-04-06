@@ -3,6 +3,7 @@ package fr.kaname.kanaeventmanager.managers;
 import fr.kaname.kanaeventmanager.KanaEventManager;
 import fr.kaname.kanaeventmanager.object.eventObject;
 import fr.kaname.kanaeventmanager.object.playerRank;
+import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.configuration.Configuration;
 import org.bukkit.entity.Player;
@@ -20,6 +21,7 @@ public class DatabaseManager {
     private Statement checker;
     private String eventTable;
     private String scoreTable;
+    private String logsTable;
     private String LastVersion;
 
     public DatabaseManager(KanaEventManager plugin) {
@@ -32,6 +34,10 @@ public class DatabaseManager {
 
     public String getScoreTable() {
         return scoreTable;
+    }
+
+    public String getLogsTable() {
+        return logsTable;
     }
 
     private Statement getStatement() {
@@ -49,6 +55,7 @@ public class DatabaseManager {
 
         eventTable = config.getString("database.tables.event");
         scoreTable = config.getString("database.tables.score");
+        logsTable = config.getString("database.tables.logs");
 
         try {
             this.statement = DriverManager.getConnection("jdbc:mysql://" + host + ":" + port + "/" + db, user, pass).createStatement();
@@ -62,6 +69,18 @@ public class DatabaseManager {
         } catch (SQLException e) {
             e.printStackTrace();
         }
+    }
+
+    public boolean checkConnection() {
+        boolean success = false;
+        try {
+            ResultSet resultSet = this.getStatement().executeQuery("SELECT * FROM " + this.eventTable);
+            success = true;
+        } catch (SQLException | NullPointerException e) {
+            e.printStackTrace();
+        }
+
+        return success;
     }
 
     public String GetPluginLatestVersion() {
@@ -89,13 +108,83 @@ public class DatabaseManager {
                 "`LocX` DOUBLE NULL," +
                 "`LocY` DOUBLE NULL," +
                 "`LocZ` DOUBLE NULL," +
-                "PRIMARY KEY (`id`))");
+                "PRIMARY KEY (`id`)" +
+                ");");
 
         this.getStatement().execute("CREATE TABLE IF NOT EXISTS `" + this.getScoreTable() + "` (" +
                 "`playerUUID` VARCHAR(45) NOT NULL," +
                 "`playerName` VARCHAR(45) NOT NULL," +
                 "`score` INT(11) NOT NULL DEFAULT 0," +
-                "PRIMARY KEY (`playerUUID`))");
+                "PRIMARY KEY (`playerUUID`)" +
+                ");");
+
+        this.getStatement().execute("CREATE TABLE IF NOT EXISTS `" + this.getLogsTable() + "` (" +
+                "`logID` INT(11) NOT NULL AUTO_INCREMENT," +
+                "`Organizer` VARCHAR(45) NOT NULL," +
+                "`eventID` INT NOT NULL," +
+                "`time` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP," +
+                "`isBeta` BOOLEAN DEFAULT 0," +
+                "PRIMARY KEY (`logID`)," +
+                "FOREIGN KEY (`eventID`) REFERENCES " + this.getEventTable() + "(`id`)" +
+                ");");
+
+        this.getStatement().execute("CREATE TABLE IF NOT EXISTS `" + this.getLogsTable() + "_rewards` (" +
+                "`rewardID` INT(11) NOT NULL AUTO_INCREMENT," +
+                "`LogID` INT(11) NOT NULL," +
+                "`WinnerUUID` VARCHAR(45) NOT NULL," +
+                "`RewardKey` VARCHAR(25) NOT NULL," +
+                "`RewardAmount` int(11) NOT NULL," +
+                "PRIMARY KEY (`rewardID`)," +
+                "FOREIGN KEY (`logID`) REFERENCES " + this.getLogsTable() + "(`logID`)" +
+                ");");
+    }
+
+    public int logEvent(boolean isWinnerCommand, int eventID, Player eventOwner, boolean isBetaEvent) {
+
+        int BetaEventValue = isBetaEvent ? 1 : 0;
+        int logID = -1;
+        if (isWinnerCommand) {
+            try {
+                this.getStatement().execute("INSERT INTO " + this.getLogsTable() + "(`Organizer`,`eventID`,`isBeta`)" +
+                        "VALUES('" + eventOwner.getName() + "','" + eventID + "','" + BetaEventValue + "')"
+                );
+
+                ResultSet result = this.getStatement().executeQuery("SELECT * FROM `" + this.getLogsTable() + "` ORDER BY `logID` DESC");
+                if (result.next()) {
+                    logID = result.getInt("logID");
+                }
+
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+
+        return logID;
+    }
+
+    public void logRewards(int logID, UUID winnerUUID, String rewardKey, int amount) {
+        try {
+
+            this.getStatement().execute("INSERT INTO " + this.getLogsTable() + "_rewards(`LogID`,`winnerUUID`,`RewardKey`, `RewardAmount`)" +
+                    "VALUES('" + logID + "','" + winnerUUID + "','" + rewardKey + "','" + amount + "')"
+            );
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void getLastEvent() {
+
+        ResultSet result = null;
+
+        try {
+            result = this.getStatement().executeQuery("SELECT * FROM");
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
     }
 
     public List<String> getEventList() {
@@ -149,13 +238,14 @@ public class DatabaseManager {
             ResultSet datas = this.getStatement().executeQuery("SELECT * FROM " + this.getEventTable() + " WHERE `Name` = '" + eventName + "'");
             if (datas.next()) {
 
+                int ID = datas.getInt("id");
                 String broadcast = datas.getString("Broadcast");
                 String displayName = datas.getString("DisplayName");
                 Double locX = datas.getDouble("LocX");
                 Double locY = datas.getDouble("LocY");
                 Double locZ = datas.getDouble("LocZ");
 
-                event = new eventObject(eventName, broadcast, locX, locY, locZ, displayName);
+                event = new eventObject(ID, eventName, broadcast, locX, locY, locZ, displayName);
             }
         } catch (SQLException e) {
             e.printStackTrace();

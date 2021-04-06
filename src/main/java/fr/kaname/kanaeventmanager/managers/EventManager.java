@@ -2,7 +2,6 @@ package fr.kaname.kanaeventmanager.managers;
 
 import fr.kaname.kanaeventmanager.KanaEventManager;
 import fr.kaname.kanaeventmanager.object.eventObject;
-import net.milkbowl.vault.chat.Chat;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -10,7 +9,6 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 
-import javax.swing.plaf.metal.MetalBorders;
 import java.util.*;
 
 public class EventManager {
@@ -24,6 +22,10 @@ public class EventManager {
 
     public EventManager(KanaEventManager kanaEventManager) {
         this.plugin = kanaEventManager;
+        this.getConfigRewards();
+    }
+
+    public void reloadEvent() {
         this.getConfigRewards();
     }
 
@@ -109,7 +111,7 @@ public class EventManager {
         }
     }
 
-    public void stopEvent(Player player) {
+    public void stopEvent(Player player, boolean isWinnerCommand) {
 
         plugin.setEvent(false);
         plugin.setActualEventName(null);
@@ -140,16 +142,22 @@ public class EventManager {
         String rewardMsg;
         String eventName = plugin.getActualEventName();
 
+        int logID = plugin.getDatabaseManager().logEvent(true, plugin.getEventID(), plugin.getEventOwner(), plugin.isBetaEvent());
 
         Map<String, Integer> commandsList = new HashMap<>();
         StringBuilder rewardsString = new StringBuilder();
+
+        String logStringID = logID != -1 ? String.valueOf(logID) : ChatColor.RED + "Une erreur s'est produite !";
+
+        sender.sendMessage(plugin.getPrefix() + ChatColor.AQUA + "Log enregistré sous l'ID : " + logStringID);
 
         for (String rewardFull : rewards) {
             String rewardKey = rewardFull.split("-")[0];
             String rewardDisplayName = this.rewardsMap.get(rewardKey).get(1);
             int rewardAmount = Integer.parseInt(rewardFull.split("-")[1]);
-            commandsList.put(this.rewardsMap.get(rewardKey).get(0), rewardAmount);
 
+            List<String> command = new ArrayList<>();
+            command.add(this.rewardsMap.get(rewardKey).get(0));
             boolean isLastReward = rewards.lastIndexOf(rewardFull) == rewards.size() - 1;
 
             if (isLastReward && rewards.size() > 1) {
@@ -158,34 +166,41 @@ public class EventManager {
                 rewardsString.append(rewardAmount).append(" ").append(rewardDisplayName).append(" ");
             }
 
+            for (OfflinePlayer winner : winners) {
+                Bukkit.getScheduler().runTaskLaterAsynchronously(plugin, () -> {
+
+                    String cmdString = command.get(0);
+
+                    cmdString = cmdString.replace("{amount}", String.valueOf(rewardAmount));
+                    cmdString = cmdString.replace("{playerName}", Objects.requireNonNull(winner.getName()));
+                    sender.sendMessage(plugin.getPrefix() + ChatColor.AQUA + " Envoi de la commande : " + cmdString);
+                    plugin.getPluginMessageManager().sendBukkitCommand(cmdString, sender);
+
+                    plugin.getDatabaseManager().logRewards(logID, winner.getUniqueId(), rewardKey, rewardAmount);
+
+                }, 20L * rewardPing);
+
+            }
+
         }
 
         StringBuilder multipleWinnerMsg = new StringBuilder();
 
+        int winnerCount = 1;
         for (OfflinePlayer winner : winners) {
 
-            plugin.getScoreManager().incrementScore(winner.getUniqueId());
-            Bukkit.getScheduler().runTaskLaterAsynchronously(plugin, () -> {
-
-
-                for (String command : commandsList.keySet()) {
-                    command = command.replace("{amount}", String.valueOf(commandsList.get(command)));
-                    command = command.replace("{playerName}", Objects.requireNonNull(winner.getName()));
-                    plugin.getPluginMessageManager().sendBukkitCommand(command, sender);
-                }
-
-            }, 20L * rewardPing);
-
-            boolean isLastPlayer = winners.lastIndexOf(winner) == winners.size() - 1;
-
-            if (!isLastPlayer) {
-                multipleWinnerMsg.append(winner.getName()).append(" ");
+            if (winners.size() != winnerCount) {
+                multipleWinnerMsg.append(winner.getName()).append(", ");
             } else {
                 multipleWinnerMsg.append(this.lastRewardLinkWord).append(" ").append(winner.getName());
             }
+
+            plugin.getScoreManager().incrementScore(winner.getUniqueId());
+            winnerCount++;
+
         }
 
-        this.stopEvent(plugin.getEventOwner());
+        this.stopEvent(plugin.getEventOwner(), true);
 
         if (winners.size() > 1) {
             rewardMsg = this.mulpipleRewardMsg;
