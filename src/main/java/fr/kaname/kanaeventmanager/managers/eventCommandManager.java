@@ -384,6 +384,19 @@ public class eventCommandManager implements CommandExecutor {
                             } else {
                                 player.sendMessage(plugin.getPrefix() + ChatColor.RED + "Format de date invalide (Format requis : dd/MM/YYYY)");
                             }
+                        } else if (args[1].equalsIgnoreCase("event") && args.length > 2) {
+
+                            String eventName = args[2];
+                            eventObject event = plugin.getDatabaseManager().getEvent(eventName);
+
+                            if (event != null) {
+
+                                player.sendMessage(plugin.getEventManager().getLogsByEvent(event));
+
+                            } else {
+                                player.sendMessage(plugin.getPrefix() + ChatColor.RED + "L'event demandé est introuvable");
+                            }
+
                         }
 
                     } else {

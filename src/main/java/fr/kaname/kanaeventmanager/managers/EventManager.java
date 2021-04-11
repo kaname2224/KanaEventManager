@@ -379,4 +379,19 @@ public class EventManager {
         return logText;
 
     }
+
+    public TextComponent getLogsByEvent(eventObject event) {
+
+        TextComponent logText = new TextComponent(ChatColor.BLUE + "10 derniers events : " + ChatColor.AQUA + event.getDisplayName()  + "\n");
+        List<logObject> logObjects = plugin.getDatabaseManager().getLogsByEvent(event);
+
+        for (logObject log : logObjects) {
+            TextComponent logString = this.formatLog(log);
+            logText.addExtra(logString);
+        }
+
+        logText.addExtra(ChatColor.BLUE + "=====");
+        return logText;
+
+    }
 }

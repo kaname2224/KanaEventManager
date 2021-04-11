@@ -302,6 +302,37 @@ public class DatabaseManager {
         return logObjects;
     }
 
+    public List<logObject> getLogsByEvent(eventObject event) {
+
+        List<logObject> logObjects = new ArrayList<>();
+
+        try {
+            ResultSet result = this.getStatement().executeQuery("SELECT * FROM " + this.getLogsTable() + " WHERE `eventID` = '" +
+                    event.getID() + "' ORDER BY `logID` DESC LIMIT 10");
+
+            if (result != null) {
+                while (result.next()) {
+
+                    logObject log = new logObject(
+                            result.getInt("logID"),
+                            result.getInt("eventID"),
+                            result.getString("organizer"),
+                            result.getDate("time"),
+                            result.getBoolean("isBeta")
+                    );
+
+                    logObjects.add(log);
+
+                }
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return logObjects;
+    }
+
     public List<logObject> get10LastEvent() {
 
         List<logObject> logObjects = new ArrayList<>();
