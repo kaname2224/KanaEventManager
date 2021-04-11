@@ -2,6 +2,7 @@ package fr.kaname.kanaeventmanager.listeners;
 
 import fr.kaname.kanabungeetp.objects.Servers;
 import fr.kaname.kanaeventmanager.KanaEventManager;
+import fr.kaname.kanaeventmanager.object.eventObject;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
@@ -110,16 +111,52 @@ public class AutocompleteListener implements Listener {
 
 
                 } else if (command.startsWith(aliase + " logs")) {
-                    complete.clear();
-                    for (String arg : argsLogsComplete) {
-                        String cmdComplete = aliase + " logs " + arg;
 
-                        if (cmdComplete.equalsIgnoreCase(command) || command.equalsIgnoreCase(aliase + " logs")) {
-                            return;
+                    if (command.startsWith(aliase + " logs event")) {
+
+                        for (String eventName : plugin.getDatabaseManager().getEventList()) {
+                            String cmdComplete = aliase + " logs event " + eventName;
+                            cmdComplete = cmdComplete.toLowerCase();
+
+                            if (cmdComplete.equalsIgnoreCase(command) || command.equalsIgnoreCase(aliase + " logs event")) {
+                                return;
+                            }
+
+                            if (cmdComplete.startsWith(command.toLowerCase())) {
+                                complete.add(eventName);
+                            }
+
                         }
 
-                        if (cmdComplete.startsWith(command.toLowerCase())) {
-                            complete.add(arg);
+                    } else if (command.startsWith(aliase + " logs player ")){
+
+                        for (OfflinePlayer offlinePlayer : plugin.getServer().getOfflinePlayers()) {
+                            String cmdComplete = aliase + " logs player " + offlinePlayer.getName();
+                            cmdComplete = cmdComplete.toLowerCase();
+
+                            if (cmdComplete.equalsIgnoreCase(command) || command.equalsIgnoreCase(aliase + " logs player")) {
+                                return;
+                            }
+
+                            if (cmdComplete.startsWith(command.toLowerCase())) {
+                                complete.add(offlinePlayer.getName());
+                            }
+
+                        }
+
+                    } else {
+
+                        complete.clear();
+                        for (String arg : argsLogsComplete) {
+                            String cmdComplete = aliase + " logs " + arg;
+
+                            if (cmdComplete.equalsIgnoreCase(command) || command.equalsIgnoreCase(aliase + " logs")) {
+                                return;
+                            }
+
+                            if (cmdComplete.startsWith(command.toLowerCase())) {
+                                complete.add(arg);
+                            }
                         }
                     }
 
