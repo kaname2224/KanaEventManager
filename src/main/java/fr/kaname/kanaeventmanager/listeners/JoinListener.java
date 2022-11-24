@@ -2,7 +2,6 @@ package fr.kaname.kanaeventmanager.listeners;
 
 import fr.kaname.kanaeventmanager.KanaEventManager;
 import fr.kaname.kanaeventmanager.object.eventObject;
-import fr.kaname.kanaeventmanager.object.playerRank;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.Bukkit;
@@ -15,7 +14,6 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.potion.PotionEffect;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -37,7 +35,7 @@ public class JoinListener implements Listener {
         }
 
         if (event.getPlayer().isOp() || event.getPlayer().hasPermission("kanaeventmanager.event.admin")) {
-            checkLatestVersion(event.getPlayer());
+            //checkLatestVersion(event.getPlayer());
         } else {
             event.getPlayer().getInventory().clear();
             event.getPlayer().setGameMode(GameMode.SURVIVAL);

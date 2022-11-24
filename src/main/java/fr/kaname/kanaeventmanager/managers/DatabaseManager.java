@@ -3,8 +3,6 @@ package fr.kaname.kanaeventmanager.managers;
 import fr.kaname.kanaeventmanager.KanaEventManager;
 import fr.kaname.kanaeventmanager.object.eventObject;
 import fr.kaname.kanaeventmanager.object.playerRank;
-import org.bukkit.Bukkit;
-import org.bukkit.OfflinePlayer;
 import org.bukkit.configuration.Configuration;
 import org.bukkit.entity.Player;
 
@@ -12,17 +10,23 @@ import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
 
 public class DatabaseManager {
 
     private KanaEventManager plugin;
-    private Statement statement;
     private Statement checker;
     private String eventTable;
     private String scoreTable;
     private String logsTable;
     private String LastVersion;
+
+    private String JDBCUrl;
+    private String JDBCUsername;
+    private String JDBCPassword;
+
 
     public DatabaseManager(KanaEventManager plugin) {
         this.plugin = plugin;
@@ -40,8 +44,26 @@ public class DatabaseManager {
         return logsTable;
     }
 
-    private Statement getStatement() {
+    private Statement getStatement() throws SQLException {
+        Statement statement = null;
+        try {
+            statement = DriverManager.getConnection(this.JDBCUrl, this.JDBCUsername, this.JDBCPassword).createStatement();
+        } catch (SQLException var3) {
+            var3.printStackTrace();
+        }
         return statement;
+    }
+
+    private void sendData(String query) {
+        plugin.getServer().getScheduler().runTaskAsynchronously(this.plugin, () -> {
+            try {
+                Statement statement = this.getStatement();
+                statement.execute(query);
+                statement.close();
+            } catch (SQLException var3) {
+                var3.printStackTrace();
+            }
+        });
     }
 
     public void ConnectDatabase() {
@@ -50,7 +72,7 @@ public class DatabaseManager {
         String host = config.getString("database.host");
         String user = config.getString("database.user");
         String pass = config.getString("database.password");
-        String db = config.getString("database.database");
+        String dbName = config.getString("database.database");
         String port = config.getString("database.port");
 
         eventTable = config.getString("database.tables.event");
@@ -58,28 +80,30 @@ public class DatabaseManager {
         logsTable = config.getString("database.tables.logs");
 
         try {
-            this.statement = DriverManager.getConnection("jdbc:mysql://" + host + ":" + port + "/" + db, user, pass).createStatement();
+            this.JDBCUrl = "jdbc:mysql://" + host + ":" + port + "/" + dbName;
+            this.JDBCUsername = user;
+            this.JDBCPassword = pass;
             createTable();
         } catch (SQLException e) {
             e.printStackTrace();
         }
-
-        try {
-            this.checker = DriverManager.getConnection("jdbc:mysql://webcord.fr:3306/devblog", "checker", "").createStatement();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+//
+//        try {
+//            this.checker = DriverManager.getConnection("jdbc:mysql://webcord.fr:3306/devblog", "checker", "").createStatement();
+//        } catch (SQLException e) {
+//            e.printStackTrace();
+//        }
     }
 
     public boolean checkConnection() {
         boolean success = false;
         try {
-            ResultSet resultSet = this.getStatement().executeQuery("SELECT * FROM " + this.eventTable);
+            Statement statement = this.getStatement();
+            ResultSet resultSet = statement.executeQuery("SELECT * FROM " + this.eventTable);
             success = true;
         } catch (SQLException | NullPointerException e) {
             e.printStackTrace();
         }
-
         return success;
     }
 
@@ -100,7 +124,7 @@ public class DatabaseManager {
     }
 
     private void createTable() throws SQLException {
-        this.getStatement().execute("CREATE TABLE IF NOT EXISTS `" + this.getEventTable() + "` (" +
+        String query = "CREATE TABLE IF NOT EXISTS `" + this.getEventTable() + "` (" +
                 "`id` INT NOT NULL AUTO_INCREMENT," +
                 "`Name` VARCHAR(45) NULL," +
                 "`DisplayName` VARCHAR(45) NULL," +
@@ -109,16 +133,18 @@ public class DatabaseManager {
                 "`LocY` DOUBLE NULL," +
                 "`LocZ` DOUBLE NULL," +
                 "PRIMARY KEY (`id`)" +
-                ");");
+                ");";
+        sendData(query);
 
-        this.getStatement().execute("CREATE TABLE IF NOT EXISTS `" + this.getScoreTable() + "` (" +
+        query = "CREATE TABLE IF NOT EXISTS `" + this.getScoreTable() + "` (" +
                 "`playerUUID` VARCHAR(45) NOT NULL," +
                 "`playerName` VARCHAR(45) NOT NULL," +
                 "`score` INT(11) NOT NULL DEFAULT 0," +
                 "PRIMARY KEY (`playerUUID`)" +
-                ");");
+                ");";
+        sendData(query);
 
-        this.getStatement().execute("CREATE TABLE IF NOT EXISTS `" + this.getLogsTable() + "` (" +
+        query = "CREATE TABLE IF NOT EXISTS `" + this.getLogsTable() + "` (" +
                 "`logID` INT(11) NOT NULL AUTO_INCREMENT," +
                 "`Organizer` VARCHAR(45) NOT NULL," +
                 "`eventID` INT NOT NULL," +
@@ -126,9 +152,10 @@ public class DatabaseManager {
                 "`isBeta` BOOLEAN DEFAULT 0," +
                 "PRIMARY KEY (`logID`)," +
                 "FOREIGN KEY (`eventID`) REFERENCES " + this.getEventTable() + "(`id`)" +
-                ");");
+                ");";
+        sendData(query);
 
-        this.getStatement().execute("CREATE TABLE IF NOT EXISTS `" + this.getLogsTable() + "_rewards` (" +
+        query = "CREATE TABLE IF NOT EXISTS `" + this.getLogsTable() + "_rewards` (" +
                 "`rewardID` INT(11) NOT NULL AUTO_INCREMENT," +
                 "`LogID` INT(11) NOT NULL," +
                 "`WinnerUUID` VARCHAR(45) NOT NULL," +
@@ -136,7 +163,8 @@ public class DatabaseManager {
                 "`RewardAmount` int(11) NOT NULL," +
                 "PRIMARY KEY (`rewardID`)," +
                 "FOREIGN KEY (`logID`) REFERENCES " + this.getLogsTable() + "(`logID`)" +
-                ");");
+                ");";
+        sendData(query);
     }
 
     public int logEvent(boolean isWinnerCommand, int eventID, Player eventOwner, boolean isBetaEvent) {
@@ -145,11 +173,12 @@ public class DatabaseManager {
         int logID = -1;
         if (isWinnerCommand) {
             try {
-                this.getStatement().execute("INSERT INTO " + this.getLogsTable() + "(`Organizer`,`eventID`,`isBeta`)" +
-                        "VALUES('" + eventOwner.getName() + "','" + eventID + "','" + BetaEventValue + "')"
-                );
+                String query = "INSERT INTO " + this.getLogsTable() + "(`Organizer`,`eventID`,`isBeta`)" +
+                        "VALUES('" + eventOwner.getName() + "','" + eventID + "','" + BetaEventValue + "')";
+                sendData(query);
 
-                ResultSet result = this.getStatement().executeQuery("SELECT * FROM `" + this.getLogsTable() + "` ORDER BY `logID` DESC");
+                Statement statement = this.getStatement();
+                ResultSet result = statement.executeQuery("SELECT * FROM `" + this.getLogsTable() + "` ORDER BY `logID` DESC");
                 if (result.next()) {
                     logID = result.getInt("logID");
                 }
@@ -163,24 +192,18 @@ public class DatabaseManager {
     }
 
     public void logRewards(int logID, UUID winnerUUID, String rewardKey, int amount) {
-        try {
 
-            this.getStatement().execute("INSERT INTO " + this.getLogsTable() + "_rewards(`LogID`,`winnerUUID`,`RewardKey`, `RewardAmount`)" +
-                    "VALUES('" + logID + "','" + winnerUUID + "','" + rewardKey + "','" + amount + "')"
-            );
-
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+        String query = "INSERT INTO " + this.getLogsTable() + "_rewards(`LogID`,`winnerUUID`,`RewardKey`, `RewardAmount`)" +
+                "VALUES('" + logID + "','" + winnerUUID + "','" + rewardKey + "','" + amount + "')";
+        sendData(query);
     }
 
     public void getLastEvent() {
 
         ResultSet result = null;
-
         try {
-            result = this.getStatement().executeQuery("SELECT * FROM");
-
+            Statement statement = this.getStatement();
+            result = statement.executeQuery("SELECT * FROM");
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -190,7 +213,8 @@ public class DatabaseManager {
     public List<String> getEventList() {
         List<String> EventList = new ArrayList<>();
         try {
-            ResultSet datas = this.getStatement().executeQuery("SELECT * FROM " + this.getEventTable());
+            Statement statement = this.getStatement();
+            ResultSet datas = statement.executeQuery("SELECT * FROM " + this.getEventTable());
             while (datas.next()) {
                 EventList.add(datas.getString("Name"));
             }
@@ -203,7 +227,8 @@ public class DatabaseManager {
     public List<playerRank> getScoresList() {
         List<playerRank> classement = new ArrayList<>(10);
         try {
-            ResultSet datas = this.getStatement().executeQuery("SELECT * FROM " + this.getScoreTable() + " ORDER BY score DESC");
+            Statement statement = this.getStatement();
+            ResultSet datas = statement.executeQuery("SELECT * FROM " + this.getScoreTable() + " ORDER BY score DESC");
             int i = 0;
             while (datas.next()) {
                 playerRank rank = new playerRank(datas.getInt("score"), UUID.fromString(datas.getString("playerUUID")), i+1);
@@ -222,7 +247,8 @@ public class DatabaseManager {
     public List<UUID> getPlayerStored() {
         List<UUID> uuids = new ArrayList<>();
         try {
-            ResultSet datas = this.getStatement().executeQuery("SELECT * FROM " + this.getScoreTable());
+            Statement statement = this.getStatement();
+            ResultSet datas = statement.executeQuery("SELECT * FROM " + this.getScoreTable());
             while (datas.next()) {
                 uuids.add(UUID.fromString(datas.getString("playerUUID")));
             }
@@ -235,7 +261,8 @@ public class DatabaseManager {
     public eventObject getEvent(String eventName) {
         eventObject event = null;
         try {
-            ResultSet datas = this.getStatement().executeQuery("SELECT * FROM " + this.getEventTable() + " WHERE `Name` = '" + eventName + "'");
+            Statement statement = this.getStatement();
+            ResultSet datas = statement.executeQuery("SELECT * FROM " + this.getEventTable() + " WHERE `Name` = '" + eventName + "'");
             if (datas.next()) {
 
                 int ID = datas.getInt("id");
@@ -257,7 +284,8 @@ public class DatabaseManager {
 
         UUID playerUUID = null;
         try {
-            ResultSet datas = this.getStatement().executeQuery("SELECT * FROM `" + this.getScoreTable() + "` WHERE `playerName` = '" +
+            Statement statement = this.getStatement();
+            ResultSet datas = statement.executeQuery("SELECT * FROM `" + this.getScoreTable() + "` WHERE `playerName` = '" +
                     playerName + "'");
 
             if (datas.next()) {
@@ -272,39 +300,28 @@ public class DatabaseManager {
     }
 
     public void createEvent(String Name, String displayName, String Broadcast, Double LocX, Double LocY, Double LocZ) {
-        try {
-            this.getStatement().execute("INSERT INTO `" + this.getEventTable() + "` (`Name`, `DisplayName`, `Broadcast`, `LocX`, `LocY`, `LocZ`)" +
-                    "VALUES ('" + Name + "','" + displayName + "','" + Broadcast + "','" + LocX + "','" + LocY + "','" + LocZ + "')");
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+        String query = "INSERT INTO `" + this.getEventTable() + "` (`Name`, `DisplayName`, `Broadcast`, `LocX`, `LocY`, `LocZ`)" +
+                "VALUES ('" + Name + "','" + displayName + "','" + Broadcast + "','" + LocX + "','" + LocY + "','" + LocZ + "')";
+        sendData(query);
     }
 
     public void deleteEvent(String Name) {
-        try {
-            this.getStatement().execute("DELETE FROM `" + this.getEventTable() + "` WHERE `Name` = '" + Name + "'");
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+        String query = "DELETE FROM `" + this.getEventTable() + "` WHERE `Name` = '" + Name + "'";
+            sendData(query);
     }
 
     public void createPlayerScore(Player player) {
-        try {
-            this.getStatement().execute("INSERT INTO `" + this.getScoreTable() + "` (`playerUUID`, `playerName`) VALUES ('" +
-                    player.getUniqueId().toString() + "', '" + player.getName() + "')");
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+        String query = "INSERT INTO `" + this.getScoreTable() + "` (`playerUUID`, `playerName`) VALUES ('" +
+                player.getUniqueId().toString() + "', '" + player.getName() + "')";
+        sendData(query);
     }
 
     public void addToScore(UUID playerUuid, int amount) {
-        try {
-            this.getStatement().execute("UPDATE `" + this.getScoreTable() + "` SET `score`=score+" + amount + " WHERE `playerUUID`='"
-                    + playerUuid.toString() + "'");
+        String query = "UPDATE `" + this.getScoreTable() + "` SET `score`=score+" + amount + " WHERE `playerUUID`='"
+                + playerUuid.toString() + "'";
+        sendData(query);
 
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+
     }
 
     public void incrementScore(UUID playerUuid) {
@@ -312,20 +329,17 @@ public class DatabaseManager {
     }
 
     public void setScore(UUID playerUuid, int score) {
-        try {
-            this.getStatement().execute("UPDATE `" + this.getScoreTable() + "` SET `score`= '" + score + "' WHERE `playerUUID`='"
-                    + playerUuid.toString() + "'");
-
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+        String query = "UPDATE `" + this.getScoreTable() + "` SET `score`= '" + score + "' WHERE `playerUUID`='"
+                + playerUuid.toString() + "'";
+        sendData(query);
     }
 
     public int getScore(UUID playerUuid) {
 
         int score = 0;
         try {
-            ResultSet datas = this.getStatement().executeQuery("SELECT * FROM `" + this.getScoreTable() + "` WHERE `playerUUID` = '" +
+            Statement statement = this.getStatement();
+            ResultSet datas = statement.executeQuery("SELECT * FROM `" + this.getScoreTable() + "` WHERE `playerUUID` = '" +
                     playerUuid.toString() + "'");
 
             if (datas.next()) {
@@ -340,12 +354,8 @@ public class DatabaseManager {
     }
 
     public void removeToScore(UUID playerUuid, int amount) {
-        try {
-            this.getStatement().execute("UPDATE `" + this.getScoreTable() + "` SET `score`=score-" + amount + " WHERE `playerUUID`='"
-                    + playerUuid.toString() + "'");
-
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+        String query = "UPDATE `" + this.getScoreTable() + "` SET `score`=score-" + amount + " WHERE `playerUUID`='"
+                + playerUuid.toString() + "'";
+        sendData(query);
     }
 }

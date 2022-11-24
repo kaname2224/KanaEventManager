@@ -6,7 +6,7 @@
 
     <groupId>fr.kaname</groupId>
     <artifactId>KanaEventManager</artifactId>
-    <version>2.6.0 - Release</version>
+    <version>2.6.1 - Release</version>
 
     <repositories>
         <repository>
@@ -36,9 +36,18 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
+            <groupId>fr.felix911</groupId>
+            <artifactId>apiBukkit</artifactId>
+            <version>0.1</version>
+            <scope>system</scope>
+            <systemPath>G:/code/Librairies/api/ApiBukkit-0.1.jar</systemPath>
+        </dependency>
+        <dependency>
             <groupId>fr.kaname</groupId>
-            <artifactId>KanaBungeeTP</artifactId>
-            <version>2.3.0</version>
+            <artifactId>kanaBungeeTp</artifactId>
+            <version>2.3.1</version>
+            <scope>system</scope>
+            <systemPath>G:/code/Librairies/api/KanaBungeeTP-2.3.1.jar</systemPath>
         </dependency>
         <dependency>
             <groupId>me.clip</groupId>
@@ -64,7 +73,7 @@
         <profile>
             <id>Serveur DEV</id>
             <build>
-                <directory>C:\Users\Maxime\Documents\Programmation\javaPluginMc\Serveurs_Mc\1.15.2\Lobby 1.15.2\plugins</directory>
+                <directory>G:\Server test\serveur\plugins</directory>
             </build>
         </profile>
         <profile>

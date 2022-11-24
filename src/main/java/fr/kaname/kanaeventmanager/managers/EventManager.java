@@ -167,19 +167,14 @@ public class EventManager {
             }
 
             for (OfflinePlayer winner : winners) {
-                Bukkit.getScheduler().runTaskLaterAsynchronously(plugin, () -> {
 
                     String cmdString = command.get(0);
-
                     cmdString = cmdString.replace("{amount}", String.valueOf(rewardAmount));
                     cmdString = cmdString.replace("{playerName}", Objects.requireNonNull(winner.getName()));
                     sender.sendMessage(plugin.getPrefix() + ChatColor.AQUA + " Envoi de la commande : " + cmdString);
-                    plugin.getPluginMessageManager().sendBukkitCommand(cmdString, sender);
-
+                    plugin.getServer().dispatchCommand(plugin.getServer().getConsoleSender(), cmdString);
+                    //plugin.getPluginMessageManager().sendBukkitCommand(cmdString, sender);
                     plugin.getDatabaseManager().logRewards(logID, winner.getUniqueId(), rewardKey, rewardAmount);
-
-                }, 20L * rewardPing);
-
             }
 
         }
